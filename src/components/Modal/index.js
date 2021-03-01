@@ -14,7 +14,7 @@ import {
   FormControl,
 } from '@material-ui/core';
 
-import iphone from '~/assets/iphone.png';
+import phone from '~/assets/iphone.png';
 import server from '~/assets/server.png';
 import switchDivice from '~/assets/switch.png';
 
@@ -22,12 +22,15 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  title: {
+    textTransform: 'capitalize',
+  },
 }));
 
 const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [type, setType] = useState('');
+  const [device, setDevice] = useState('');
   const [name, setName] = useState('');
   const [ip, setIp] = useState('');
   const [typeDevice, setTypeDevice] = useState('');
@@ -45,7 +48,7 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     if (data.action === 'edit') {
       const { label, image, ip: ipNode } = data.dataNode;
       setName(label);
-      setType(image);
+      setDevice(image);
       if (ipNode) setIp(ipNode);
     }
   }, [data, data.action]);
@@ -54,13 +57,13 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     setRemoveData();
     setOpen((x) => !x);
     setName('');
-    setType('');
+    setDevice('');
     setTypeDevice('');
     setIp('');
   };
 
   const handleChange = (event) => {
-    setType(event.target.value);
+    setDevice(event.target.value);
   };
   const handleChangeName = (event) => {
     setName(event.target.value);
@@ -71,7 +74,7 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
 
   function chooseTypeDevice(typeParam) {
     switch (typeParam) {
-      case iphone:
+      case phone:
         return 'client';
       case server:
         return 'server';
@@ -80,36 +83,45 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     }
   }
 
-  const handleSubmit = () => {
+  function saveEdge(edge, callback) {
+    const customEdge = {
+      ...edge,
+      label: name,
+      length: 300,
+    };
+    callback(customEdge);
+  }
+
+  function saveNode(node, callback) {
+    const typeChoose = chooseTypeDevice(device);
+    const customNode = {
+      ...node,
+      label: name,
+      shape: 'image',
+      image: device,
+      size: 10,
+      type: typeChoose,
+    };
+    if (device !== switchDivice) {
+      customNode.ip = ip;
+      setIp('');
+    }
+    callback(customNode);
+  }
+
+  function handleSubmit() {
     const { dataNode, callback } = data;
-    const typeChoose = chooseTypeDevice(type);
+
     if (data.type === 'node') {
-      const customNode = {
-        ...dataNode,
-        label: name,
-        shape: 'image',
-        image: type,
-        size: 10,
-        type: typeChoose,
-      };
-      if (type !== switchDivice) {
-        customNode.ip = ip;
-        setIp('');
-      }
-      callback(customNode);
+      saveNode(dataNode, callback);
     } else {
-      const customEdge = {
-        ...dataNode,
-        label: name,
-        length: 300,
-      };
-      callback(customEdge);
+      saveEdge(dataNode, callback);
     }
     setName('');
-    setType('');
+    setDevice('');
     setTypeDevice('');
     setOpen((x) => !x);
-  };
+  }
 
   return (
     <>
@@ -121,7 +133,9 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
           maxWidth="sm"
           fullWidth
         >
-          <DialogTitle id="customized-dialog-title">Node</DialogTitle>
+          <DialogTitle id="customized-dialog-title" className={classes.title}>
+            {data.type}
+          </DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
@@ -144,17 +158,17 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
                   <Select
                     labelId="type"
                     id="type"
-                    value={type}
+                    value={device}
                     onChange={handleChange}
                     fullWidth
                   >
-                    <MenuItem value={iphone}>Device</MenuItem>
+                    <MenuItem value={phone}>Device</MenuItem>
                     <MenuItem value={switchDivice}>Switch</MenuItem>
                     <MenuItem value={server}>Server</MenuItem>
                   </Select>
                 </FormControl>
 
-                {type && type !== switchDivice && (
+                {device && device !== switchDivice && (
                   <TextField
                     autoFocus
                     margin="dense"
@@ -171,10 +185,10 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
-              Cancelar
+              Cancel
             </Button>
             <Button onClick={handleSubmit} color="primary">
-              Adicionar
+              {`${data.action} ${data.type}`}
             </Button>
           </DialogActions>
         </Dialog>
