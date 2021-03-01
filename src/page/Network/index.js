@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import VisNetworkReactComponent from 'vis-network-react';
-import AddModal from '~/components/modal/AddModal';
+import Modal from '~/components/Modal';
 import { Button } from '~/components/Button';
 import { Container, ButtonGroup } from './styles';
 
@@ -15,20 +15,19 @@ function NetWork() {
   const [edgeSelection, setEdgeSelection] = useState(null);
   const modalRef = useRef();
 
-  const handleModalAdd = (dataNode, callback) => {
-    setObjectActions({ dataNode, callback, type: 'node' });
+  const handleModalAdd = (dataNode, callback, action) => {
+    setObjectActions({ dataNode, callback, type: 'node', action });
   };
   const handleModalAddEdge = (dataNode, callback) => {
     setObjectActions({ dataNode, callback, type: 'edge' });
   };
   const handleModalEditNode = (dataNode, callback) => {
+    console.log(dataNode);
     setObjectActions({ dataNode, callback, type: 'node' });
   };
 
-  const handleClick = (params) => {
-    if (params.nodes && params.nodes.length === 0) setNodeSelection(params);
-  };
   const handleDoubleClick = (params) => {
+    console.log(params);
     if (params.nodes && params.nodes.length > 0) setNodeSelection(params);
   };
   const handleDragStat = (params) => {
@@ -47,65 +46,6 @@ function NetWork() {
       doubleClick(params) {
         handleDoubleClick(params);
       },
-      // oncontext(params) {
-      //   console.log('oncontext Event:', params);
-
-      //   params.event = '[original event]';
-      // },
-      // dragStart(params) {
-      //   // There's no point in displaying this event on screen, it gets immediately overwritten
-      //   params.event = '[original event]';
-      //   console.log('dragStart Event:', params);
-      //   // handleDragStat(params);
-      // },
-      // dragging(params) {
-      //   params.event = '[original event]';
-      // },
-      // dragEnd(params) {
-      //   params.event = '[original event]';
-      //   console.log('dragEnd Event:', params);
-      // },
-      // controlNodeDragging(params) {
-      //   params.event = '[original event]';
-      //   console.log('controlNodeDragging Event:', params);
-      // },
-      // controlNodeDragEnd(params) {
-      //   params.event = '[original event]';
-      //   console.log('controlNodeDragEnd Event:', params);
-      // },
-      // zoom(params) {},
-      // showPopup(params) {},
-      // hidePopup() {
-      //   console.log('hidePopup Event');
-      // },
-      // select(params) {
-      //   console.log('select Event:', params);
-      // },
-      // selectNode(params) {
-      //   console.log('selectNode Event:', params);
-      //   console.log(network?.getPositions(params.nodes[0]));
-      // },
-      // selectEdge(params) {
-      //   console.log('selectEdge Event:', params);
-      // },
-      // deselectNode(params) {
-      //   console.log('deselectNode Event:', params);
-      // },
-      // deselectEdge(params) {
-      //   console.log('deselectEdge Event:', params);
-      // },
-      // hoverNode(params) {
-      //   console.log('hoverNode Event:', params);
-      // },
-      // hoverEdge(params) {
-      //   console.log('hoverEdge Event:', params);
-      // },
-      // blurNode(params) {
-      //   console.log('blurNode Event:', params);
-      // },
-      // blurEdge(params) {
-      //   console.log('blurEdge Event:', params);
-      // },
     },
     options: {
       // edges: {
@@ -115,13 +55,13 @@ function NetWork() {
         enabled: false,
         initiallyActive: false,
         addNode(data, callback) {
-          handleModalAdd(data, callback);
+          handleModalAdd(data, callback, 'add');
         },
         addEdge(data, callback) {
           handleModalAddEdge(data, callback);
         },
         editNode(data, callback) {
-          handleModalAdd(data, callback);
+          handleModalAdd(data, callback, 'edit');
         },
         editEdge: true,
         deleteNode: true,
@@ -196,6 +136,7 @@ function NetWork() {
     <Container>
       <ButtonGroup>
         <Button onClick={handleModal}>add node</Button>
+        <Button onClick={handleModal}>add node manual</Button>
         <Button onClick={handleEditNode}>edit node</Button>
         <Button onClick={handleModalEdge}>add edge</Button>
       </ButtonGroup>
@@ -218,7 +159,7 @@ function NetWork() {
         }}
       />
 
-      <AddModal
+      <Modal
         ref={modalRef}
         data={objectAction}
         setRemoveData={() => {
