@@ -14,11 +14,10 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import SettingsInputAntennaIcon from '@material-ui/icons/SettingsInputAntenna';
 import { useState } from 'react';
 import NetWork from '../Network';
+import { GraphProvider } from '~/context/GraphContext';
 
 const drawerWidth = 240;
 
@@ -137,11 +136,23 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
+          <ListItem button onClick={() => setNameSection('Scenery')}>
+            <ListItemIcon>
+              <SettingsInputAntennaIcon />
+            </ListItemIcon>
+            <ListItemText primary="Scenery" />
+          </ListItem>
           <ListItem button onClick={() => setNameSection('Network')}>
             <ListItemIcon>
               <SettingsInputAntennaIcon />
             </ListItemIcon>
             <ListItemText primary="Network" />
+          </ListItem>
+          <ListItem button onClick={() => setNameSection('Import/export Data')}>
+            <ListItemIcon>
+              <SettingsInputAntennaIcon />
+            </ListItemIcon>
+            <ListItemText primary="Import/export Data" />
           </ListItem>
           <ListItem button onClick={() => setNameSection('Import/export Data')}>
             <ListItemIcon>
@@ -157,7 +168,9 @@ export default function PersistentDrawerLeft() {
         })}
       >
         <div className={classes.drawerHeader} />
-        <NetWork />
+        <GraphProvider>
+          {nameSection === 'Scenery' && <NetWork />}
+        </GraphProvider>
       </main>
     </div>
   );

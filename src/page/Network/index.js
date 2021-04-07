@@ -1,47 +1,41 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-
+import { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import VisNetworkReactComponent from 'vis-network-react';
+import { v4 } from 'uuid';
+
 import Modal from '~/components/Modal';
 import { Button } from '~/components/Button';
 import { Container, ButtonGroup } from './styles';
+import { GraphContext } from '~/context/GraphContext';
 
 function NetWork() {
   const [modal, setModal] = useState(false);
   const [network, setNetwork] = useState(null);
-  const [edges, setEdges] = useState(null);
-  const [nodes, setNodes] = useState(null);
   const [objectAction, setObjectActions] = useState({});
   const [nodeSelection, setNodeSelection] = useState(null);
   const [edgeSelection, setEdgeSelection] = useState(null);
   const modalRef = useRef();
+  const { graph } = useContext(GraphContext);
 
   const handleModalAdd = (dataNode, callback, action) => {
     setObjectActions({ dataNode, callback, type: 'node', action });
   };
-  const handleModalAddEdge = (dataNode, callback) => {
-    setObjectActions({ dataNode, callback, type: 'edge' });
+  const handleModalAddEdge = (dataNode, callback, action) => {
+    setObjectActions({ dataNode, callback, type: 'edge', action });
   };
   const handleModalEditNode = (dataNode, callback) => {
-    console.log(dataNode);
     setObjectActions({ dataNode, callback, type: 'node' });
   };
 
+  const handleClick = (params) => {};
+
   const handleDoubleClick = (params) => {
-    console.log(params);
     if (params.nodes && params.nodes.length > 0) setNodeSelection(params);
-  };
-  const handleDragStat = (params) => {
-    if (params.nodes && params.nodes.length > 0) setEdgeSelection(params);
   };
 
   const [state, setState] = useState({
-    graph: {
-      nodes: [],
-      edges: [],
-    },
     events: {
       click(params) {
-        // handleClick(params);
+        handleClick(params);
       },
       doubleClick(params) {
         handleDoubleClick(params);
@@ -58,7 +52,7 @@ function NetWork() {
           handleModalAdd(data, callback, 'add');
         },
         addEdge(data, callback) {
-          handleModalAddEdge(data, callback);
+          handleModalAddEdge(data, callback, 'add');
         },
         editNode(data, callback) {
           handleModalAdd(data, callback, 'edit');
@@ -90,6 +84,7 @@ function NetWork() {
     )
       network.addNodeMode();
   }, [network, nodeSelection]);
+
   useEffect(
     () =>
       edgeSelection &&
@@ -98,58 +93,22 @@ function NetWork() {
     [network, edgeSelection]
   );
 
-  console.log(objectAction);
-
   useEffect(
     () => Object.keys(objectAction).length > 0 && modalRef.current?.open(),
     [objectAction]
   );
 
-  useEffect(() => {
-    const nodesData = nodes?.map((edge) => edge);
-    if (nodesData && nodesData.length > state.graph.nodes.length) {
-      setState((prevState) => ({
-        ...prevState,
-        graph: {
-          ...prevState.graph,
-          nodes: nodesData,
-        },
-      }));
-    }
-  }, [nodes, state.graph.nodes.length]);
-
-  useEffect(() => {
-    const edgesData = edges?.map((edge) => edge);
-    if (edgesData && edgesData.length > state.graph.edges.length) {
-      setState((prevState) => ({
-        ...prevState,
-        graph: {
-          ...prevState.graph,
-          edges: edgesData,
-        },
-      }));
-    }
-  }, [edges, state.graph.edges.length]);
-
-  const { graph, events, options } = state;
+  const { events, options } = state;
   return (
     <Container>
       <ButtonGroup>
         <Button onClick={handleModal}>add node</Button>
-        <Button onClick={handleModal}>add node manual</Button>
-        <Button onClick={handleEditNode}>edit node</Button>
         <Button onClick={handleModalEdge}>add edge</Button>
       </ButtonGroup>
       <VisNetworkReactComponent
-        data={graph}
+        data={graph || {}}
         options={options}
         events={events}
-        getEdges={(edgesData) => {
-          setEdges(edgesData);
-        }}
-        getNodes={(nodesData) => {
-          setNodes(nodesData);
-        }}
         getNetwork={(data) => {
           setNetwork(data);
         }}
@@ -161,7 +120,9 @@ function NetWork() {
 
       <Modal
         ref={modalRef}
-        data={objectAction}
+        data={{
+          ...objectAction,
+        }}
         setRemoveData={() => {
           network?.disableEditMode();
           setObjectActions({});
