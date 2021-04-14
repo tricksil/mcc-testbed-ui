@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback, useContext } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import VisNetworkReactComponent from 'vis-network-react';
-import { v4 } from 'uuid';
 
 import Modal from '~/components/Modal';
 import { Button } from '~/components/Button';
-import { Container, ButtonGroup } from './styles';
+import { ButtonGroup } from './styles';
 import { GraphContext } from '~/context/GraphContext';
+import { Container } from '~/components/Container';
 
 function NetWork() {
   const [modal, setModal] = useState(false);
@@ -14,7 +14,7 @@ function NetWork() {
   const [nodeSelection, setNodeSelection] = useState(null);
   const [edgeSelection, setEdgeSelection] = useState(null);
   const modalRef = useRef();
-  const { graph } = useContext(GraphContext);
+  const { graph, convertionalScenery } = useContext(GraphContext);
 
   const handleModalAdd = (dataNode, callback, action) => {
     setObjectActions({ dataNode, callback, type: 'node', action });
@@ -104,6 +104,7 @@ function NetWork() {
       <ButtonGroup>
         <Button onClick={handleModal}>add node</Button>
         <Button onClick={handleModalEdge}>add edge</Button>
+        <Button onClick={convertionalScenery}>Convertional Scenery</Button>
       </ButtonGroup>
       <VisNetworkReactComponent
         data={graph || {}}

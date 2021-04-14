@@ -168,7 +168,7 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
   }
 
   function addNodesAndEdge(node) {
-    const typeChoose = chooseTypeDevice(device);
+    const typeChoose = chooseTypeDevice(phone);
     const customNode = {
       shape: 'image',
       image: phone,

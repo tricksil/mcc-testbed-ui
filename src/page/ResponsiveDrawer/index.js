@@ -18,6 +18,7 @@ import SettingsInputAntennaIcon from '@material-ui/icons/SettingsInputAntenna';
 import { useState } from 'react';
 import NetWork from '../Network';
 import { GraphProvider } from '~/context/GraphContext';
+import Data from '../Data';
 
 const drawerWidth = 240;
 
@@ -82,7 +83,7 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [nameSection, setNameSection] = useState('Persistent drawer');
+  const [nameSection, setNameSection] = useState('Import/export Data');
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -154,12 +155,6 @@ export default function PersistentDrawerLeft() {
             </ListItemIcon>
             <ListItemText primary="Import/export Data" />
           </ListItem>
-          <ListItem button onClick={() => setNameSection('Import/export Data')}>
-            <ListItemIcon>
-              <SettingsInputAntennaIcon />
-            </ListItemIcon>
-            <ListItemText primary="Import/export Data" />
-          </ListItem>
         </List>
       </Drawer>
       <main
@@ -170,6 +165,7 @@ export default function PersistentDrawerLeft() {
         <div className={classes.drawerHeader} />
         <GraphProvider>
           {nameSection === 'Scenery' && <NetWork />}
+          {nameSection === 'Import/export Data' && <Data />}
         </GraphProvider>
       </main>
     </div>

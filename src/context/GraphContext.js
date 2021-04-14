@@ -1,5 +1,9 @@
 import { createContext, useState } from 'react';
 import PropTypes from 'prop-types';
+import {
+  convertionalToTestbed,
+  convertionalToVis,
+} from '~/helpers/convertionalScenery';
 
 export const GraphContext = createContext();
 
@@ -36,6 +40,18 @@ export function GraphProvider({ children }) {
     }));
   }
 
+  function convertionalScenery() {
+    return convertionalToTestbed(graph);
+  }
+  function convertionalScenaryToVis(graphJson) {
+    const vis = convertionalToVis(graphJson);
+    console.log(vis);
+    setGraph((prev) => ({
+      ...prev,
+      ...vis,
+    }));
+  }
+
   return (
     <GraphContext.Provider
       value={{
@@ -45,6 +61,8 @@ export function GraphProvider({ children }) {
         createEdge,
         addNodeRandom,
         editNode,
+        convertionalScenery,
+        convertionalScenaryToVis,
       }}
     >
       {children}
