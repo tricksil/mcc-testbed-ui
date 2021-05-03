@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-return */
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,10 +16,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsInputAntennaIcon from '@material-ui/icons/SettingsInputAntenna';
-import { useState } from 'react';
+import Button from '@material-ui/core/Button';
+import { useContext, useState } from 'react';
 import NetWork from '../Network';
-import { GraphProvider } from '~/context/GraphContext';
 import Data from '../Data';
+import SnackBar from '~/components/Snackbar';
+import { GraphContext } from '~/context/GraphContext';
+import { SnackbarContext } from '~/context/SnackContext';
+import api from '~/services/api';
 
 const drawerWidth = 240;
 
@@ -61,6 +66,10 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+  drawerActions: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   content: {
     flexGrow: 1,
     padding: theme.spacing(1),
@@ -77,13 +86,23 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },
+  contentToolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  button: {
+    color: 'white',
+  },
 }));
 
 export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [nameSection, setNameSection] = useState('Import/export Data');
+  const [nameSection, setNameSection] = useState('Scenery');
+
+  const { graph, convertionalScenery } = useContext(GraphContext);
+  const { snackBarOpen } = useContext(SnackbarContext);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -102,19 +121,39 @@ export default function PersistentDrawerLeft() {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            {nameSection}
-          </Typography>
+        <Toolbar className={classes.contentToolbar}>
+          <div className={classes.drawerActions}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              {nameSection}
+            </Typography>
+          </div>
+          {nameSection.includes('Scenery') && (
+            <div>
+              <Button
+                className={classes.button}
+                type="button"
+                // onClick={handleExecScenery}
+              >
+                Exec
+              </Button>
+              <Button
+                className={classes.button}
+                type="button"
+                // onClick={handleStopScenery}
+              >
+                Stop
+              </Button>
+            </div>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -143,12 +182,6 @@ export default function PersistentDrawerLeft() {
             </ListItemIcon>
             <ListItemText primary="Scenery" />
           </ListItem>
-          <ListItem button onClick={() => setNameSection('Network')}>
-            <ListItemIcon>
-              <SettingsInputAntennaIcon />
-            </ListItemIcon>
-            <ListItemText primary="Network" />
-          </ListItem>
           <ListItem button onClick={() => setNameSection('Import/export Data')}>
             <ListItemIcon>
               <SettingsInputAntennaIcon />
@@ -163,10 +196,9 @@ export default function PersistentDrawerLeft() {
         })}
       >
         <div className={classes.drawerHeader} />
-        <GraphProvider>
-          {nameSection === 'Scenery' && <NetWork />}
-          {nameSection === 'Import/export Data' && <Data />}
-        </GraphProvider>
+
+        {nameSection === 'Scenery' && <NetWork />}
+        {nameSection === 'Import/export Data' && <Data />}
       </main>
     </div>
   );

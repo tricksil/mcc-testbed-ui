@@ -3,20 +3,29 @@ import styled from 'styled-components';
 
 export const Button = styled.button`
   max-width: 100%;
-  padding: 8px 16px;
+  padding: 8px 24px;
   border: none;
   cursor: pointer;
-`;
+  background-color: #28262e;
+  color: #fff;
+  text-transform: capitalize;
 
-export const ButtonIcon = styled.button`
-  max-width: 100%;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > img {
+    margin-right: 5px;
+  }
 
-  img {
-    width: 25px;
-    height: 25px;
+  &:first-child {
+    border-bottom-left-radius: 16px;
+  }
+
+  &:last-child {
+    border-bottom-right-radius: 16px;
+  }
+  &:hover {
+    background-color: rgba(40, 38, 46, 0.5);
+    color: #28262e;
   }
 `;

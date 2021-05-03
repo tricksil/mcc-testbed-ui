@@ -8,7 +8,7 @@ export const Content = styled.div`
 export const Form = styled.form`
   height: 400px;
   width: 300px;
-  border: 1px solid #000;
+  border: 1px solid #3f51b5;
   border-radius: 4px;
   padding: 20px;
 
@@ -17,7 +17,7 @@ export const Form = styled.form`
   align-items: center;
   justify-content: space-between;
 
-  button {
+  > button {
     width: 100%;
     padding: 8px 16px;
     background: white;

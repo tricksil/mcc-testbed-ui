@@ -9,6 +9,7 @@ export const GraphContext = createContext();
 
 export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
+  const [isExecute, setExecute] = useState(false);
 
   function createNode(node) {
     setGraph((prevState) => ({
@@ -39,13 +40,69 @@ export function GraphProvider({ children }) {
       nodes: [...nodeFound, node],
     }));
   }
+  function editEdge(edge) {
+    const edgeFound = graph.edges?.filter((e) => e.id !== edge.id);
+    setGraph((prevState) => ({
+      ...prevState,
+      edges: [...edgeFound, edge],
+    }));
+  }
+  function findNode(nodeIndex) {
+    return graph.nodes?.find((e) => e.id === nodeIndex);
+  }
+  function isSmartphone(nodeIndex, type) {
+    return graph.nodes?.find(
+      (node) => node.id === nodeIndex && node.type === type
+    );
+  }
+
+  function findEdge(edgeIndex) {
+    return graph.edges?.find((e) => e.id === edgeIndex);
+  }
+
+  function findEdges(edgesIndexs) {
+    return edgesIndexs?.reduce(
+      (acc, edgeIndex) =>
+        acc.push(graph.edges?.find((e) => e.id === edgeIndex)),
+      []
+    );
+  }
+
+  function removeNode(nodeIndex) {
+    return function (nodes) {
+      if (!nodeIndex) return nodes;
+      return nodes?.filter((n) => n.id !== nodeIndex);
+    };
+  }
+
+  function removeEdges(edgesIndex) {
+    return function (edges) {
+      return function (qtdItemRemoved) {
+        if (edgesIndex.length === 0) return edges;
+        edgesIndex?.forEach((edgeIndex) => {
+          const index = edges?.findIndex((e) => e.id === edgeIndex);
+          if (index !== -1) edges?.splice(index, qtdItemRemoved);
+        });
+        return edges;
+      };
+    };
+  }
+
+  function removeNodeOrEdges(nodes) {
+    return function (edges) {
+      setGraph((prev) => ({
+        ...prev,
+        nodes: removeNode(nodes)(graph.nodes),
+        edges: removeEdges(edges)(graph.edges)(1),
+      }));
+    };
+  }
 
   function convertionalScenery() {
     return convertionalToTestbed(graph);
   }
   function convertionalScenaryToVis(graphJson) {
     const vis = convertionalToVis(graphJson);
-    console.log(vis);
     setGraph((prev) => ({
       ...prev,
       ...vis,
@@ -56,13 +113,21 @@ export function GraphProvider({ children }) {
     <GraphContext.Provider
       value={{
         graph,
+        isExecute,
+        isSmartphone,
         setGraph,
         createNode,
         createEdge,
         addNodeRandom,
         editNode,
+        editEdge,
+        findNode,
+        findEdge,
+        findEdges,
+        removeNodeOrEdges,
         convertionalScenery,
         convertionalScenaryToVis,
+        setExecute,
       }}
     >
       {children}

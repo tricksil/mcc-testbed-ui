@@ -1,6 +1,6 @@
-import phone from '~/assets/iphone.png';
-import server from '~/assets/server.png';
-import switchDivice from '~/assets/switch.png';
+import phone from '~/assets/phone.svg';
+import server from '~/assets/server.svg';
+import switchDivice from '~/assets/switch.svg';
 
 export function convertionalToTestbed(graphs) {
   const nodes = graphs.nodes
@@ -10,6 +10,7 @@ export function convertionalToTestbed(graphs) {
       ip: node.ip,
       interface: node.id,
       type: node.type,
+      dimage: node.dimage,
     }));
 
   const switches = graphs.nodes
@@ -31,7 +32,6 @@ export function convertionalToTestbed(graphs) {
 }
 
 export function convertionalToVis(testbed) {
-  console.log(testbed);
   const { NODES, SWITCHES, LINKS } = JSON.parse(testbed);
 
   const nodesTypes = NODES.map((node) => ({
@@ -43,6 +43,7 @@ export function convertionalToVis(testbed) {
     shape: 'image',
     image: node.type === 'client' ? phone : server,
     size: 15,
+    title: `Name: ${node.name}<br>Ip: ${node.ip}<br>Image: ${node.dimage}`,
   }));
 
   const nodes = [
@@ -51,8 +52,10 @@ export function convertionalToVis(testbed) {
       id: node,
       label: node,
       shape: 'image',
+      type: 'switch',
       image: switchDivice,
       size: 15,
+      title: `Name: ${node}`,
     })),
   ];
 
@@ -61,6 +64,7 @@ export function convertionalToVis(testbed) {
     to: link.to,
     delay: link.delay,
     bandwidth: link.bw,
+    title: `<p>Delay: ${link.delay}<br>Bandwidth: ${link.bw}</p>`,
   }));
 
   return {

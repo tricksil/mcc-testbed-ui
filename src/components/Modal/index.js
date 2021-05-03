@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import PropTypes from 'prop-types';
 import {
   useState,
@@ -24,10 +25,10 @@ import {
   Divider,
 } from '@material-ui/core';
 
-import phone from '~/assets/iphone.png';
-import server from '~/assets/server.png';
-import switchDivice from '~/assets/switch.png';
-import { DeviceFactory } from '~/helpers/deviceFactory';
+import phone from '~/assets/phone.svg';
+import server from '~/assets/server.svg';
+import switchDivice from '~/assets/switch.svg';
+import { createDimage, DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,26 +40,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
-  const { createNode, createEdge, addNodeRandom, editNode } = useContext(
-    GraphContext
-  );
+const AddModal = forwardRef(({ data, removeData }, ref) => {
+  const { createNode, createEdge } = useContext(GraphContext);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [device, setDevice] = useState('');
   const [name, setName] = useState('');
   const [ip, setIp] = useState('');
-  const [bandwidth, setBandwidth] = useState(0);
-  const [delay, setDelay] = useState(0);
-  const [quantity, setQuantity] = useState(5);
-  const [bandwidthRandom, setBandwidthRandom] = useState(5);
-  const [delayRandom, setDelayRandom] = useState(5);
-
-  const [checked, setChecked] = useState(false);
-
-  const toggleChecked = () => {
-    setChecked((prev) => !prev);
-  };
+  const [bandwidth, setBandwidth] = useState('');
+  const [delay, setDelay] = useState('');
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -69,17 +59,8 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     },
   }));
 
-  useEffect(() => {
-    if (data.action === 'edit') {
-      const { label, image, ip: ipNode } = data.dataNode;
-      setName(label);
-      setDevice(image);
-      if (ipNode) setIp(ipNode);
-    }
-  }, [data, data.action]);
-
   const handleClose = () => {
-    setRemoveData();
+    removeData();
     setOpen((x) => !x);
     setName('');
     setDevice('');
@@ -89,8 +70,9 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
   const handleChange = (event) => {
     setDevice(event.target.value);
   };
+
   const handleChangeName = (event) => {
-    setName(event.target.value);
+    setName(event.target.value.split(' ').join(''));
   };
   const handleChangeIp = (event) => {
     setIp(event.target.value);
@@ -99,19 +81,9 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
   const handleChangeDelay = (event) => {
     setDelay(event.target.value);
   };
-  const handleChangeQuantity = (event) => {
-    setQuantity(Number(event.target.value));
-  };
 
   const handleChangeBandwidth = (event) => {
     setBandwidth(event.target.value);
-  };
-  const handleChangeDelayRandom = (event) => {
-    setDelayRandom(event.target.value);
-  };
-
-  const handleChangeBandwidthRandom = (event) => {
-    setBandwidthRandom(event.target.value);
   };
 
   function chooseTypeDevice(typeParam) {
@@ -129,18 +101,22 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     const customEdge = {
       ...edge,
       label: name,
-      bandwidth,
-      delay,
+      bandwidth: Number(bandwidth),
+      delay: `${delay}ms`,
+      title: `<p>Delay: ${delay}ms<br>Bandwidth: ${bandwidth}</p>`,
     };
     createEdge(customEdge);
-    setRemoveData();
+    removeData();
   }
 
   function saveNode(node) {
     const typeChoose = chooseTypeDevice(device);
+    const nodeIndex = node.id.split('-')[0];
     const customNode = {
       ...node,
-      label: name,
+      id: nodeIndex,
+      label: typeChoose !== 'switch' ? name : nodeIndex,
+      title: `Name: ${typeChoose !== 'switch' ? name : nodeIndex}`,
       shape: 'image',
       image: device,
       size: 15,
@@ -148,64 +124,134 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
     };
     if (device !== switchDivice) {
       customNode.ip = ip;
+      customNode.title = `${customNode.title}<br>IP: ${ip}`;
       setIp('');
+    }
+    if (typeChoose !== 'switch') {
+      customNode.dimage = createDimage(name)(typeChoose);
+      customNode.title = `${customNode.title}<br>Image: ${customNode.dimage}`;
     }
     createNode(customNode);
-    setRemoveData();
+    removeData();
   }
 
-  function editNodeModal(node) {
-    const customNode = {
-      ...node,
-      label: name,
-    };
-    if (device !== switchDivice) {
-      customNode.ip = ip;
-      setIp('');
-    }
-    editNode(customNode);
-    setRemoveData();
+  function clearStates() {
+    setDelay('');
+    setBandwidth('');
+    setName('');
+    setDevice('');
+    setOpen((x) => !x);
   }
 
-  function addNodesAndEdge(node) {
-    const typeChoose = chooseTypeDevice(phone);
-    const customNode = {
-      shape: 'image',
-      image: phone,
-      size: 15,
-      type: typeChoose,
+  function builderNodesAndEdge() {
+    return function (dataNode) {
+      if (data.type === 'node' && data.action === 'add') {
+        saveNode(dataNode);
+      } else if (data.type === 'edge' && data.action === 'add') {
+        saveEdge(dataNode);
+      }
     };
-    const customEdge = {
-      bandwidth: bandwidthRandom,
-      delay: delayRandom,
-    };
-    const graph = DeviceFactory(node?.id, quantity, customEdge, customNode);
-    addNodeRandom(graph);
-    setRemoveData();
   }
 
   function handleSubmit() {
     const { dataNode } = data;
+    builderNodesAndEdge()(dataNode);
+    clearStates();
+  }
 
-    if (checked) {
-      addNodesAndEdge(dataNode);
-    } else if (data.type === 'node' && data.action === 'add') {
-      saveNode(dataNode);
-    } else if (data.type === 'node' && data.action === 'edit') {
-      editNodeModal(dataNode);
-    } else if (data.type === 'edge') {
-      saveEdge(dataNode);
-    }
+  function renderNode() {
+    return (
+      <>
+        <FormControl className={classes.formControl} fullWidth margin="dense">
+          <InputLabel id="type">Type</InputLabel>
+          <Select
+            labelId="type"
+            id="type"
+            value={device}
+            onChange={handleChange}
+            fullWidth
+            disabled={data?.action === 'edit'}
+          >
+            <MenuItem value={phone}>Smartphone</MenuItem>
+            <MenuItem value={switchDivice}>Switch</MenuItem>
+            <MenuItem value={server}>Server</MenuItem>
+          </Select>
+        </FormControl>
 
-    setChecked(false);
-    setDelayRandom(0);
-    setBandwidthRandom(0);
-    setQuantity(5);
-    setDelay(0);
-    setBandwidth(0);
-    setName('');
-    setDevice('');
-    setOpen((x) => !x);
+        {device && device !== switchDivice && (
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+            value={name}
+            onChange={handleChangeName}
+            autoComplete="off"
+            aria-autocomplete="none"
+          />
+        )}
+
+        {device && device !== switchDivice && (
+          <>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="ip"
+              label="Ip Address"
+              type="text"
+              autoComplete="off"
+              fullWidth
+              value={ip}
+              onChange={handleChangeIp}
+              aria-autocomplete="none"
+            />
+          </>
+        )}
+      </>
+    );
+  }
+
+  function renderEdge() {
+    return (
+      <>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Name"
+          type="text"
+          fullWidth
+          value={name}
+          onChange={handleChangeName}
+          autoComplete="off"
+          aria-autocomplete="none"
+        />
+        <TextField
+          margin="dense"
+          id="delay"
+          label="Delay(ms)"
+          type="text"
+          fullWidth
+          value={delay}
+          onChange={handleChangeDelay}
+          autoComplete="off"
+          aria-autocomplete="none"
+        />
+        <TextField
+          margin="dense"
+          id="bandwidth"
+          label="Bandwidth"
+          type="text"
+          fullWidth
+          value={bandwidth}
+          onChange={handleChangeBandwidth}
+          autoComplete="off"
+          aria-autocomplete="none"
+        />
+      </>
+    );
   }
 
   return (
@@ -222,134 +268,8 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
             {data.type}
           </DialogTitle>
           <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Name"
-              type="text"
-              fullWidth
-              value={name}
-              onChange={handleChangeName}
-              autoComplete="off"
-            />
-            {data?.type === 'node' && (
-              <>
-                <FormControl
-                  className={classes.formControl}
-                  fullWidth
-                  margin="dense"
-                >
-                  <InputLabel id="type">Type</InputLabel>
-                  <Select
-                    labelId="type"
-                    id="type"
-                    value={device}
-                    onChange={handleChange}
-                    fullWidth
-                    disabled={data?.action === 'edit'}
-                  >
-                    <MenuItem value={phone}>Smartphone</MenuItem>
-                    <MenuItem value={switchDivice}>Switch</MenuItem>
-                    <MenuItem value={server}>Server</MenuItem>
-                  </Select>
-                </FormControl>
-
-                {data?.action === 'edit' && (
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          size="medium"
-                          checked={checked}
-                          onChange={toggleChecked}
-                        />
-                      }
-                      label="add nodes"
-                      labelPlacement="start"
-                    />
-                  </FormGroup>
-                )}
-
-                {checked && (
-                  <>
-                    <h3>Node</h3>
-                    <TextField
-                      margin="dense"
-                      id="quantity"
-                      label="Quantity"
-                      type="number"
-                      fullWidth
-                      value={quantity}
-                      onChange={handleChangeQuantity}
-                      autoComplete="off"
-                    />
-                    <h3>Edge</h3>
-                    <TextField
-                      margin="dense"
-                      id="delayRandom"
-                      label="Delay"
-                      type="number"
-                      fullWidth
-                      value={delayRandom}
-                      onChange={handleChangeDelayRandom}
-                      autoComplete="off"
-                    />
-                    <TextField
-                      margin="dense"
-                      id="bandwidthRandom"
-                      label="Bandwidth"
-                      type="number"
-                      fullWidth
-                      value={bandwidthRandom}
-                      onChange={handleChangeBandwidthRandom}
-                      autoComplete="off"
-                    />
-                  </>
-                )}
-
-                {device && device !== switchDivice && (
-                  <>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      id="ip"
-                      label="Ip Address"
-                      type="text"
-                      autoComplete="off"
-                      fullWidth
-                      value={ip}
-                      onChange={handleChangeIp}
-                    />
-                  </>
-                )}
-              </>
-            )}
-
-            {data?.type === 'edge' && (
-              <>
-                <TextField
-                  margin="dense"
-                  id="delay"
-                  label="Delay"
-                  type="number"
-                  fullWidth
-                  value={delay}
-                  onChange={handleChangeDelay}
-                  autoComplete="off"
-                />
-                <TextField
-                  margin="dense"
-                  id="bandwidth"
-                  label="Bandwidth"
-                  type="number"
-                  fullWidth
-                  value={bandwidth}
-                  onChange={handleChangeBandwidth}
-                  autoComplete="off"
-                />
-              </>
-            )}
+            {data?.type === 'node' && renderNode()}
+            {data?.type === 'edge' && renderEdge()}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
@@ -368,7 +288,7 @@ const AddModal = forwardRef(({ data, setRemoveData }, ref) => {
 AddModal.displayName = 'AddModal';
 
 AddModal.propTypes = {
-  setRemoveData: PropTypes.func.isRequired,
+  removeData: PropTypes.func.isRequired,
   data: PropTypes.oneOfType([PropTypes.object]).isRequired,
 };
 
