@@ -154,7 +154,10 @@ function NetWork() {
       const node = nodeSelection.nodes[0];
       if (isSmartphone(node, 'client')) {
         const isVnc = getPortVnc(node);
-        if (isVnc) vncModalRef.current?.open();
+        if (isVnc) {
+          vncModalRef.current?.name(node);
+          vncModalRef.current?.open();
+        }
         setNodeSelection({});
       }
     }
@@ -225,7 +228,9 @@ function NetWork() {
         }}
         style={{
           width: '100%',
-          height: '80vh',
+          height: isExecute
+            ? 'calc(100vh - 80px)'
+            : 'calc(100vh - 80px - 40px)',
         }}
       />
 

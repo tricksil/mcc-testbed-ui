@@ -1,14 +1,17 @@
 import { useHistory } from 'react-router-dom';
 
 import { useContext, useRef } from 'react';
+
 import Styles from './styles';
 
 import cloud from '~/assets/cloud_1.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
+import SearchModal from '~/components/SearchModal';
 
 function Home() {
   const uploadRef = useRef();
+  const searchRef = useRef();
   const history = useHistory();
   const { convertionalScenaryToVis } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
@@ -49,7 +52,12 @@ function Home() {
             Upload Scenery
           </Styles.BoardButton>
 
-          <Styles.BoardButton type="button">Search Scenery</Styles.BoardButton>
+          <Styles.BoardButton
+            onClick={() => searchRef.current?.open()}
+            type="button"
+          >
+            Search Scenery
+          </Styles.BoardButton>
           <input
             type="file"
             className="hidden"
@@ -60,6 +68,7 @@ function Home() {
           />
         </Styles.BoardOptions>
       </Styles.ContentOptions>
+      <SearchModal ref={searchRef} />
     </Styles.Container>
   );
 }

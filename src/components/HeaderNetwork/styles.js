@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Container = styled.div`
   background: #28262e;
@@ -54,16 +54,49 @@ export const Logout = styled.button`
   cursor: pointer;
 `;
 
-export const Button = styled.button`
+const load = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const ActionContent = styled.div`
+  position: relative;
+  padding: 10px;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  > img {
-    margin-right: 5px;
-  }
+  margin-right: 5px;
+`;
 
+export const Action = styled.span`
+  padding: 10px;
+  border-radius: 50%;
+  border: 3px solid ${(props) => (props.execute ? '#CC2727' : '#2bde68')};
+  position: absolute;
+  left: 0%;
+  bottom: 0%;
+  top: 0%;
+  right: 0%;
+
+  ${(props) =>
+    props.loading
+      ? css`
+          border-top-color: transparent;
+          animation: ${load} 1s infinite linear;
+        `
+      : ''}
+`;
+
+export const Button = styled.button`
+  display: flex;
+  align-items: center;
+  min-width: 100px;
   border: 2px solid #fff;
   border-radius: 8px;
   background: #fff;
   padding: 4px 8px;
+  color: #222222;
+  font-weight: bold;
 `;

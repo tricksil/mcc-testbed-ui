@@ -4,4 +4,5 @@ export const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
   max-width: 400px;
+  height: 40px;
 `;

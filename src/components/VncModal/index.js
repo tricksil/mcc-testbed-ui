@@ -1,7 +1,13 @@
 /* eslint-disable no-return-await */
 /* eslint-disable func-names */
 import PropTypes from 'prop-types';
-import { useState, forwardRef, useImperativeHandle, useMemo } from 'react';
+import {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useContext,
+} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {
@@ -10,6 +16,9 @@ import {
   DialogContent,
   DialogTitle,
 } from '@material-ui/core';
+
+import { Iframe } from './styles';
+import { GraphContext } from '~/context/GraphContext';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -23,10 +32,16 @@ const useStyles = makeStyles((theme) => ({
 const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const { findNode } = useContext(GraphContext);
 
   useImperativeHandle(ref, () => ({
     open: () => {
       setOpen((x) => !x);
+    },
+    name: (value) => {
+      const v = findNode(value);
+      setName(v.label);
     },
     close: () => {
       setOpen((x) => !x);
@@ -49,20 +64,21 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
           open={open}
           onClose={handleClose}
           aria-labelledby="customized-dialog-title"
-          maxWidth="xd"
-          fullWidth
-          fullScreen
+          maxWidth="md"
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
-            VNC
+            {name}
           </DialogTitle>
-          <DialogContent>
-            <iframe
+          <DialogContent
+            style={{ width: '80vh', height: '100vw', overflow: 'hidden' }}
+          >
+            <Iframe
               title="vnc"
-              src={`http://${process.env.REACT_APP_IP}:${vncPort}/vnc_auto.html`}
+              src={`http://0.0.0.0:${vncPort}/vnc_auto.html`}
               frameBorder="0"
               width="100%"
               height="100%"
+              loading
             />
           </DialogContent>
           <DialogActions>

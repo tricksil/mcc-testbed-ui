@@ -22,7 +22,7 @@ function createName() {
 export function createDimage() {
   return function (type) {
     if (type === 'client') {
-      return `renanalves/android-22:vnc`;
+      return `renanalves/android-22`;
     }
     return `renanalves/server-testbed`;
   };

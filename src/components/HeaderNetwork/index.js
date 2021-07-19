@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useContext, useState } from 'react';
+import ip from 'ip';
 
-import { Container, Content, Button } from './styles';
+import { Container, Content, Button, Action, ActionContent } from './styles';
 import logo from '~/assets/cloud.svg';
 import execute from '~/assets/execute.svg';
 import stop from '~/assets/stop.svg';
@@ -20,6 +21,8 @@ function HeaderNetwork() {
   const { snackBarOpen } = useContext(SnackbarContext);
   const [isLoading, setLoading] = useState(false);
 
+  console.log(ip.address());
+
   async function handleExecScenery() {
     setLoading((x) => !x);
     if (graph?.nodes.length === 0) {
@@ -30,6 +33,7 @@ function HeaderNetwork() {
     const sceneryTestbed = convertionalScenery(graph);
     try {
       snackBarOpen('Loading Scenery', 'info');
+      console.log(sceneryTestbed);
       const { data } = await api.post('create', sceneryTestbed);
       if (data.code === 400) {
         snackBarOpen(data.message, 'error');
@@ -46,11 +50,6 @@ function HeaderNetwork() {
   async function handleStopScenery() {
     setLoading((x) => !x);
     snackBarOpen('Loading Stop Scenery', 'info');
-    if (graph?.nodes.length === 0) {
-      snackBarOpen('Scenery not be void!', 'error');
-      setLoading((x) => !x);
-      return;
-    }
     try {
       const { data } = await api.get('stop');
       snackBarOpen(data.message, 'success');
@@ -79,10 +78,14 @@ function HeaderNetwork() {
             }
             disabled={isLoading}
           >
-            <img
-              src={isExecute ? stop : execute}
-              alt={isExecute ? 'Stop' : 'Execute'}
-            />
+            <ActionContent>
+              <Action loading={isLoading ? 1 : 0} execute={isExecute} />
+              <img
+                src={isExecute ? stop : execute}
+                alt={isExecute ? 'Stop' : 'Execute'}
+              />
+            </ActionContent>
+
             {isExecute ? 'Stop' : 'Execute'}
           </Button>
         </aside>
