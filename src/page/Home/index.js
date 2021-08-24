@@ -10,17 +10,18 @@ import { SnackbarContext } from '~/context/SnackContext';
 import SearchModal from '~/components/SearchModal';
 import ConfigModal from '~/components/ConfigModal';
 import { ApiContext } from '~/context/ApiContext';
+import ScenarioModal from '~/components/ScenarioModal';
 
 function Home() {
   const uploadRef = useRef();
   const searchRef = useRef();
   const configRef = useRef();
+  const scenarioRef = useRef();
   const history = useHistory();
   const { convertionalScenaryToVis } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
 
-  console.log(ip);
   useEffect(() => {
     if (!ip) {
       configRef.current?.open();
@@ -28,7 +29,7 @@ function Home() {
   }, [ip]);
 
   function handleCreateScenery() {
-    history.push('/network');
+    scenarioRef.current?.open();
   }
 
   function upload() {
@@ -84,6 +85,7 @@ function Home() {
           />
         </Styles.BoardOptions>
       </Styles.ContentOptions>
+      <ScenarioModal ref={scenarioRef} />
       <SearchModal ref={searchRef} />
       <ConfigModal ref={configRef} />
     </Styles.Container>

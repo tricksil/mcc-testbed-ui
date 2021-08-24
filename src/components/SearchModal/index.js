@@ -75,7 +75,10 @@ const SearchModal = forwardRef((props, ref) => {
 
   function handleSuccess() {
     console.log(seleted);
-    if (!seleted) snackBarOpen('Error getting scenario', 'error');
+    if (!seleted) {
+      snackBarOpen('Error getting scenario', 'error');
+      return;
+    }
     convertionalScenaryToVis(JSON.stringify(seleted.value));
     snackBarOpen('Successfully obtained scenario', 'success');
     history.push('/network');
