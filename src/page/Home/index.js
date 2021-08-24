@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useEffect } from 'react';
 
 import Styles from './styles';
 
@@ -8,13 +8,24 @@ import cloud from '~/assets/cloud_1.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import SearchModal from '~/components/SearchModal';
+import ConfigModal from '~/components/ConfigModal';
+import { ApiContext } from '~/context/ApiContext';
 
 function Home() {
   const uploadRef = useRef();
   const searchRef = useRef();
+  const configRef = useRef();
   const history = useHistory();
   const { convertionalScenaryToVis } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
+  const { ip } = useContext(ApiContext);
+
+  console.log(ip);
+  useEffect(() => {
+    if (!ip) {
+      configRef.current?.open();
+    }
+  }, [ip]);
 
   function handleCreateScenery() {
     history.push('/network');
@@ -45,7 +56,12 @@ function Home() {
       </Styles.ContentImage>
       <Styles.ContentOptions>
         <Styles.BoardOptions>
-          <Styles.BoardButton type="button" onClick={handleCreateScenery}>
+          <Styles.BoardButton
+            type="button"
+            onClick={() => {
+              handleCreateScenery();
+            }}
+          >
             Build scenery
           </Styles.BoardButton>
           <Styles.BoardButton type="button" onClick={upload}>
@@ -69,6 +85,7 @@ function Home() {
         </Styles.BoardOptions>
       </Styles.ContentOptions>
       <SearchModal ref={searchRef} />
+      <ConfigModal ref={configRef} />
     </Styles.Container>
   );
 }

@@ -23,7 +23,6 @@ import Data from '../Data';
 import SnackBar from '~/components/Snackbar';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
-import api from '~/services/api';
 
 const drawerWidth = 240;
 

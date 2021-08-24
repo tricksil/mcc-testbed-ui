@@ -32,6 +32,7 @@ export function convertionalToTestbed(graphs) {
 }
 
 export function convertionalToVis(testbed) {
+  console.log(testbed);
   const { NODES, SWITCHES, LINKS } = JSON.parse(testbed);
 
   const nodesTypes = NODES.map((node) => ({

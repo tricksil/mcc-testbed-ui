@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import VisNetworkReactComponent from 'vis-network-react';
 
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 import AddModal from '~/components/Modal';
 import EditModal from '~/components/EditModal';
 import { Button } from '~/components/Button';
@@ -13,8 +14,8 @@ import VncModal from '~/components/VncModal';
 
 import addImage from '~/assets/add.svg';
 import removeImage from '~/assets/remove.svg';
-import api from '~/services/api';
 import { SnackbarContext } from '~/context/SnackContext';
+import { ApiContext } from '~/context/ApiContext';
 
 function NetWork() {
   const [network, setNetwork] = useState(null);
@@ -30,6 +31,7 @@ function NetWork() {
   const { snackBarOpen } = useContext(SnackbarContext);
   const history = useHistory();
   const [vncPort, setVncPort] = useState('');
+  const { ip } = useContext(ApiContext);
 
   useEffect(
     () => () => {
@@ -126,7 +128,9 @@ function NetWork() {
     async (node) => {
       try {
         const containerName = findNode(node);
-        const response = await api.get(`/vnc/${containerName.label}`);
+        const response = await axios.get(
+          `http://${ip}:5000/vnc/${containerName.label}`
+        );
 
         if (response.data.message !== null) {
           setVncPort(response.data.message);
@@ -139,7 +143,7 @@ function NetWork() {
         return false;
       }
     },
-    [findNode, snackBarOpen]
+    [findNode, snackBarOpen, ip]
   );
 
   useEffect(() => {

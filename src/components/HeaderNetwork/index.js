@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useContext, useState } from 'react';
-import ip from 'ip';
 
+import axios from 'axios';
 import { Container, Content, Button, Action, ActionContent } from './styles';
 import logo from '~/assets/cloud.svg';
 import execute from '~/assets/execute.svg';
 import stop from '~/assets/stop.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
-import api from '~/services/api';
+import { ApiContext } from '~/context/ApiContext';
 
 function HeaderNetwork() {
   const {
@@ -19,9 +19,8 @@ function HeaderNetwork() {
     setGraph,
   } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
+  const { ip } = useContext(ApiContext);
   const [isLoading, setLoading] = useState(false);
-
-  console.log(ip.address());
 
   async function handleExecScenery() {
     setLoading((x) => !x);
@@ -34,7 +33,10 @@ function HeaderNetwork() {
     try {
       snackBarOpen('Loading Scenery', 'info');
       console.log(sceneryTestbed);
-      const { data } = await api.post('create', sceneryTestbed);
+      const { data } = await axios.post(
+        `http://${ip}:5000/create`,
+        sceneryTestbed
+      );
       if (data.code === 400) {
         snackBarOpen(data.message, 'error');
       } else {
@@ -51,7 +53,7 @@ function HeaderNetwork() {
     setLoading((x) => !x);
     snackBarOpen('Loading Stop Scenery', 'info');
     try {
-      const { data } = await api.get('stop');
+      const { data } = await axios.get(`http://${ip}:5000/stop`);
       snackBarOpen(data.message, 'success');
       setExecute(false);
       setLoading((x) => !x);

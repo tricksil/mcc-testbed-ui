@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
 } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {
@@ -17,10 +18,12 @@ import {
 
 import AsyncSelect from 'react-select/async';
 
-import { GraphContext } from '~/context/GraphContext';
-import api from '~/services/api';
+import axios from 'axios';
 
 import { ContainerSelect, colourStyles, Info } from './styles';
+import { ApiContext } from '~/context/ApiContext';
+import { GraphContext } from '~/context/GraphContext';
+import { SnackbarContext } from '~/context/SnackContext';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -32,10 +35,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SearchModal = forwardRef((props, ref) => {
+  const { ip } = useContext(ApiContext);
   const { convertionalScenaryToVis } = useContext(GraphContext);
+  const { snackBarOpen } = useContext(SnackbarContext);
   const [seleted, setSeleted] = useState({});
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     setSeleted({});
@@ -57,7 +63,7 @@ const SearchModal = forwardRef((props, ref) => {
 
   const promiseOptions = async () => {
     try {
-      const response = await api.get('/scenarios/list');
+      const response = await axios.get(`http://${ip}:5000/scenarios/list`);
       return response.data?.scenarios?.map((scenario) => ({
         label: scenario.name,
         value: scenario.configuration,
@@ -66,6 +72,14 @@ const SearchModal = forwardRef((props, ref) => {
       console.log(error);
     }
   };
+
+  function handleSuccess() {
+    console.log(seleted);
+    if (!seleted) snackBarOpen('Error getting scenario', 'error');
+    convertionalScenaryToVis(JSON.stringify(seleted.value));
+    snackBarOpen('Successfully obtained scenario', 'success');
+    history.push('/network');
+  }
 
   return (
     <>
@@ -80,7 +94,7 @@ const SearchModal = forwardRef((props, ref) => {
           <DialogTitle id="customized-dialog-title" className={classes.title}>
             Search Scenarios
           </DialogTitle>
-          <DialogContent>
+          <DialogContent style={{ height: '20vh' }}>
             <ContainerSelect>
               <AsyncSelect
                 cacheOptions
@@ -97,7 +111,9 @@ const SearchModal = forwardRef((props, ref) => {
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button color="primary">Confirm</Button>
+            <Button color="primary" onClick={handleSuccess}>
+              Confirm
+            </Button>
           </DialogActions>
         </Dialog>
       )}
