@@ -26,10 +26,11 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-const ScenarioModal = forwardRef((props, ref) => {
+const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const { name, setName } = useContext(GraphContext);
+  const [name, setName] = useState('');
+  const { onChangeName } = useContext(GraphContext);
   const history = useHistory();
   const [error, setError] = useState(false);
 
@@ -39,12 +40,15 @@ const ScenarioModal = forwardRef((props, ref) => {
     },
     close: () => {
       setOpen((x) => !x);
+      setName('');
+      onClose();
     },
   }));
 
   const handleClose = () => {
     setOpen((x) => !x);
     setName('');
+    onClose();
   };
 
   function clearStates() {
@@ -55,11 +59,18 @@ const ScenarioModal = forwardRef((props, ref) => {
     setName(event.target.value);
   };
 
-  const handleSubmitSave = () => {
+  const handleSubmitSave = async () => {
     if (!name) {
       setError(true);
       return;
     }
+    onChangeName(name);
+
+    if (onSubmit) {
+      onSubmit();
+      return;
+    }
+
     history.push('/network');
   };
 
@@ -105,5 +116,14 @@ const ScenarioModal = forwardRef((props, ref) => {
 });
 
 ScenarioModal.displayName = 'VncMScenarioModalodal';
+
+ScenarioModal.propTypes = {
+  onSubmit: PropTypes.func,
+  onClose: PropTypes.func.isRequired,
+};
+
+ScenarioModal.defaultProps = {
+  onSubmit: null,
+};
 
 export default ScenarioModal;

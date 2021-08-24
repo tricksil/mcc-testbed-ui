@@ -10,8 +10,8 @@ export const GraphContext = createContext();
 export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [isExecute, setExecute] = useState(false);
-  const [name, setName] = useState('');
-
+  const [name, onChangeName] = useState('');
+  console.log('Graph', name);
   function createNode(node) {
     setGraph((prevState) => ({
       ...prevState,
@@ -130,7 +130,7 @@ export function GraphProvider({ children }) {
         convertionalScenaryToVis,
         setExecute,
         name,
-        setName,
+        onChangeName,
       }}
     >
       {children}

@@ -18,10 +18,9 @@ export const Content = styled.div`
       width: 40px;
     }
   }
+
   aside {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
   }
 `;
 
@@ -69,6 +68,12 @@ export const ActionContent = styled.div`
   align-items: center;
   margin-right: 5px;
 `;
+export const IconContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+`;
 
 export const Action = styled.span`
   padding: 10px;
@@ -99,4 +104,15 @@ export const Button = styled.button`
   padding: 4px 8px;
   color: #222222;
   font-weight: bold;
+  margin-right: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background: #eaecef;
+    border-color: #eaecef;
+  }
+
+  &:last-child {
+    margin-right: 0px;
+  }
 `;

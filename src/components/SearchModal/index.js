@@ -97,7 +97,7 @@ const SearchModal = forwardRef((props, ref) => {
           <DialogTitle id="customized-dialog-title" className={classes.title}>
             Search Scenarios
           </DialogTitle>
-          <DialogContent style={{ height: '20vh' }}>
+          <DialogContent>
             <ContainerSelect>
               <AsyncSelect
                 cacheOptions
@@ -106,6 +106,7 @@ const SearchModal = forwardRef((props, ref) => {
                 styles={colourStyles}
                 value={seleted}
                 onChange={(scenario) => setSeleted(scenario)}
+                placeholder="Select..."
               />
             </ContainerSelect>
             {seleted?.value && <Info {...seleted.value} />}

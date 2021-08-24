@@ -1,14 +1,23 @@
 import { Link } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext, useState, useRef } from 'react';
 
 import axios from 'axios';
-import { Container, Content, Button, Action, ActionContent } from './styles';
+import {
+  Container,
+  Content,
+  Button,
+  Action,
+  ActionContent,
+  IconContent,
+} from './styles';
 import logo from '~/assets/cloud.svg';
 import execute from '~/assets/execute.svg';
 import stop from '~/assets/stop.svg';
+import save from '~/assets/save.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import { ApiContext } from '~/context/ApiContext';
+import ScenarioConfigModal from '../ScenarioConfigModal';
 
 function HeaderNetwork() {
   const {
@@ -21,6 +30,7 @@ function HeaderNetwork() {
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
   const [isLoading, setLoading] = useState(false);
+  const scenarioConfigRef = useRef();
 
   async function handleExecScenery() {
     setLoading((x) => !x);
@@ -62,6 +72,10 @@ function HeaderNetwork() {
       setLoading((x) => !x);
     }
   }
+  async function handleSaveScenario() {
+    scenarioConfigRef.current?.open();
+    console.log('click');
+  }
 
   return (
     <Container>
@@ -90,8 +104,17 @@ function HeaderNetwork() {
 
             {isExecute ? 'Stop' : 'Execute'}
           </Button>
+          {!isExecute && (
+            <Button type="button" onClick={handleSaveScenario}>
+              <IconContent>
+                <img src={save} alt="Save" />
+              </IconContent>
+              Save
+            </Button>
+          )}
         </aside>
       </Content>
+      <ScenarioConfigModal ref={scenarioConfigRef} />
     </Container>
   );
 }

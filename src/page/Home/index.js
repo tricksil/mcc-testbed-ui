@@ -1,10 +1,10 @@
 import { useHistory } from 'react-router-dom';
 
-import { useContext, useRef, useEffect } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 
 import Styles from './styles';
 
-import cloud from '~/assets/cloud_1.svg';
+import cloud from '~/assets/cloud_2.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import SearchModal from '~/components/SearchModal';
@@ -21,6 +21,7 @@ function Home() {
   const { convertionalScenaryToVis } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
+  const [action, setAction] = useState(null);
 
   useEffect(() => {
     if (!ip) {
@@ -34,20 +35,32 @@ function Home() {
 
   function upload() {
     uploadRef.current.click();
+    setAction(null);
   }
 
-  function openFile(evt) {
+  async function openFile(evt) {
     const fileObj = evt.target.files[0];
     const reader = new FileReader();
 
-    reader.addEventListener('load', (event) => {
+    await reader.addEventListener('load', (event) => {
       const json = atob(event.target.result.substring(29));
       convertionalScenaryToVis(json);
       snackBarOpen('Updload success', 'success');
       handleCreateScenery();
+      history.push('/network');
     });
-    reader.readAsDataURL(fileObj);
+    await reader.readAsDataURL(fileObj);
   }
+
+  function handleUpload() {
+    setAction('upload');
+  }
+
+  useEffect(() => {
+    if (action && action === 'upload') {
+      scenarioRef.current?.open();
+    }
+  }, [action]);
 
   return (
     <Styles.Container>
@@ -65,27 +78,40 @@ function Home() {
           >
             Build scenery
           </Styles.BoardButton>
-          <Styles.BoardButton type="button" onClick={upload}>
-            Upload Scenery
-          </Styles.BoardButton>
-
           <Styles.BoardButton
             onClick={() => searchRef.current?.open()}
             type="button"
           >
             Search Scenery
           </Styles.BoardButton>
-          <input
-            type="file"
-            className="hidden"
-            multiple={false}
-            accept=".json"
-            onChange={(evt) => openFile(evt)}
-            ref={uploadRef}
-          />
+
+          <Styles.BoardButton type="button" onClick={handleUpload}>
+            Upload Scenery
+            <input
+              type="file"
+              className="hidden"
+              multiple={false}
+              accept=".json"
+              onChange={(evt) => openFile(evt)}
+              ref={uploadRef}
+            />
+          </Styles.BoardButton>
+
+          <Styles.BoardButton
+            type="button"
+            onClick={() => configRef.current?.open()}
+          >
+            Server Configuration
+          </Styles.BoardButton>
         </Styles.BoardOptions>
       </Styles.ContentOptions>
-      <ScenarioModal ref={scenarioRef} />
+      <ScenarioModal
+        onSubmit={() => (action && action === 'upload' ? upload() : null)}
+        onClose={() => {
+          setAction(null);
+        }}
+        ref={scenarioRef}
+      />
       <SearchModal ref={searchRef} />
       <ConfigModal ref={configRef} />
     </Styles.Container>

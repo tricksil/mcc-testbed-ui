@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
 const ConfigModal = forwardRef((props, ref) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [ip, setIp] = useState('');
-  const { changeIp } = useContext(ApiContext);
+  const { ip: ipSave, changeIp } = useContext(ApiContext);
+  const [ip, setIp] = useState(ipSave);
   const [isLoading, setLoading] = useState(false);
   const [isConnected, setConnected] = useState(false);
   const [error, setError] = useState(false);
