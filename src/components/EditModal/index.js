@@ -30,6 +30,7 @@ import server from '~/assets/server.svg';
 import switchDivice from '~/assets/switch.svg';
 import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
+import { emptyField } from '~/validation';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -55,6 +56,14 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [quantity, setQuantity] = useState(5);
   const [bandwidthRandom, setBandwidthRandom] = useState('');
   const [delayRandom, setDelayRandom] = useState('');
+  const [deviceCheckedError, setDeviceCheckedError] = useState(false);
+  const [nameError, setNameError] = useState(false);
+  const [ipError, setIpError] = useState(false);
+  const [bandwidthError, setBandwidthError] = useState(false);
+  const [delayError, setDelayError] = useState(false);
+  const [quantityError, setQuantityError] = useState(false);
+  const [bandwidthRandomError, setBandwidthRandomError] = useState(false);
+  const [delayRandomError, setDelayRandomError] = useState(false);
 
   const [checked, setChecked] = useState(false);
 
@@ -94,30 +103,53 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   };
   const handleChangeDeviceCheck = (event) => {
     setDeviceChecked(event.target.value);
+    setDeviceCheckedError(false);
   };
   const handleChangeName = (event) => {
     setName(event.target.value.split(' ').join(''));
+    setNameError(false);
   };
   const handleChangeIp = (event) => {
     setIp(event.target.value);
+    setIpError(false);
   };
 
   const handleChangeDelay = (event) => {
-    setDelay(event.target.value);
+    const value = event.target.value.replace(/\D/g, '');
+    setDelay(value);
+    if (value) {
+      setDelayError(false);
+    }
   };
   const handleChangeQuantity = (event) => {
-    setQuantity(Number(event.target.value));
+    const value = event.target.value.replace(/\D/g, '');
+    setQuantity(value);
+    if (value) {
+      setQuantityError(false);
+    }
   };
 
   const handleChangeBandwidth = (event) => {
-    setBandwidth(event.target.value);
+    const value = event.target.value.replace(/\D/g, '');
+    setBandwidth(value);
+    if (value) {
+      setBandwidthError(false);
+    }
   };
   const handleChangeDelayRandom = (event) => {
-    setDelayRandom(event.target.value);
+    const value = event.target.value.replace(/\D/g, '');
+    setDelayRandom(value);
+    if (value) {
+      setDelayRandomError(false);
+    }
   };
 
   const handleChangeBandwidthRandom = (event) => {
-    setBandwidthRandom(event.target.value);
+    const value = event.target.value.replace(/\D/g, '');
+    setBandwidthRandom(value);
+    if (value) {
+      setBandwidthRandomError(false);
+    }
   };
 
   function chooseTypeDevice(typeParam) {
@@ -182,6 +214,14 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     setName('');
     setDevice('');
     setDeviceChecked('');
+    setDeviceCheckedError(false);
+    setNameError(false);
+    setIpError(false);
+    setBandwidthError(false);
+    setDelayError(false);
+    setQuantityError(false);
+    setBandwidthRandomError(false);
+    setDelayRandomError(false);
     setOpen((x) => !x);
   }
 
@@ -197,8 +237,71 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     };
   }
 
+  function validationNode() {
+    let invalid = false;
+    if (device !== switchDivice) {
+      if (emptyField(name)) {
+        setNameError(true);
+        invalid = true;
+      }
+
+      if (emptyField(ip)) {
+        setIpError(true);
+        invalid = true;
+      }
+    }
+
+    if (device === switchDivice) {
+      if (emptyField(deviceChecked)) {
+        setDeviceCheckedError(true);
+
+        invalid = true;
+      }
+
+      if (emptyField(quantity)) {
+        setQuantityError(true);
+        invalid = true;
+      }
+
+      if (emptyField(delayRandom)) {
+        setDelayRandomError(true);
+        invalid = true;
+      }
+
+      if (emptyField(bandwidthRandom)) {
+        setBandwidthRandomError(true);
+        invalid = true;
+      }
+    }
+
+    return invalid;
+  }
+
+  function validationEdge() {
+    let invalid = false;
+
+    if (emptyField(delay)) {
+      setDelayError(true);
+      invalid = true;
+    }
+
+    if (emptyField(bandwidth)) {
+      setBandwidthError(true);
+      invalid = true;
+    }
+
+    return invalid;
+  }
+
+  function validation() {
+    return data?.type === 'node' ? validationNode() : validationEdge();
+  }
+
   function handleSubmit() {
     const { dataNode } = data;
+    if (validation()) {
+      return;
+    }
     builderNodesAndEdge(checked)(dataNode);
     clearStates();
   }
@@ -216,12 +319,12 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           margin="dense"
           id="quantity"
           label="Quantity"
-          type="number"
           fullWidth
           value={quantity}
           onChange={handleChangeQuantity}
           autoComplete="off"
           aria-autocomplete="none"
+          error={quantityError}
         />
         <FormControl className={classes.formControl} fullWidth margin="dense">
           <InputLabel id="type">Type</InputLabel>
@@ -231,6 +334,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
             value={deviceChecked}
             onChange={handleChangeDeviceCheck}
             fullWidth
+            error={deviceCheckedError}
           >
             <MenuItem value={phone}>Smartphone</MenuItem>
             <MenuItem value={server}>Server</MenuItem>
@@ -247,6 +351,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeDelayRandom}
           autoComplete="off"
           aria-autocomplete="none"
+          error={delayRandomError}
         />
         <TextField
           margin="dense"
@@ -258,6 +363,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeBandwidthRandom}
           autoComplete="off"
           aria-autocomplete="none"
+          error={bandwidthRandomError}
         />
       </>
     );
@@ -277,6 +383,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeName}
           autoComplete="off"
           aria-autocomplete="none"
+          error={nameError}
         />
         <TextField
           autoFocus
@@ -289,6 +396,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           value={ip}
           onChange={handleChangeIp}
           aria-autocomplete="none"
+          error={ipError}
         />
       </>
     );
@@ -350,6 +458,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeName}
           autoComplete="off"
           aria-autocomplete="none"
+          error={nameError}
         />
         <TextField
           margin="dense"
@@ -361,6 +470,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeDelay}
           autoComplete="off"
           aria-autocomplete="none"
+          error={delayError}
         />
         <TextField
           margin="dense"
@@ -372,6 +482,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           onChange={handleChangeBandwidth}
           autoComplete="off"
           aria-autocomplete="none"
+          error={bandwidthError}
         />
       </>
     );

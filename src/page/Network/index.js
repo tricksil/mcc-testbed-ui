@@ -3,7 +3,7 @@ import VisNetworkReactComponent from 'vis-network-react';
 
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import AddModal from '~/components/Modal';
+import AddModal from '~/components/AddModal';
 import EditModal from '~/components/EditModal';
 import { Button } from '~/components/Button';
 import { ButtonGroup } from './styles';

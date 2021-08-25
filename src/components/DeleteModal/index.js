@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable func-names */
 import PropTypes from 'prop-types';
 import {
@@ -53,13 +54,38 @@ const DeleteModal = forwardRef(({ data, removeData }, ref) => {
     clearStates();
   }
 
-  const textSubmit = useMemo(
-    () =>
-      `${data.action} ${data?.dataNode?.nodes && 'node'} ${
-        data?.dataNode?.nodes && data?.dataNode?.edges?.length > 0 ? 'end' : ''
-      } ${data?.dataNode?.edges?.length > 0 ? 'edges' : ''}`,
-    [data.action, data?.dataNode?.edges?.length, data?.dataNode?.nodes]
-  );
+  const textSubmit = useMemo(() => {
+    if (Object.keys(data).length === 0) {
+      return 'delete nodes and edges';
+    }
+    const node = data?.dataNode?.nodes && 'node';
+    const end =
+      data?.dataNode?.nodes && data?.dataNode?.edges?.length > 0 ? 'end' : '';
+    const edges =
+      data?.dataNode?.edges?.length === 1
+        ? 'edge'
+        : data?.dataNode?.edges?.length > 1
+        ? 'edges'
+        : '';
+    return `${data.action} ${node} ${end} ${edges}`;
+  }, [data]);
+
+  console.log(data);
+  const title = useMemo(() => {
+    if (Object.keys(data).length === 0) {
+      return 'nodes and edges';
+    }
+    const node = data?.dataNode?.nodes && 'node';
+    const end =
+      data?.dataNode?.nodes && data?.dataNode?.edges?.length > 0 ? 'end' : '';
+    const edges =
+      data?.dataNode?.edges?.length === 1
+        ? 'link'
+        : data?.dataNode?.edges?.length > 1
+        ? 'links'
+        : '';
+    return `${data.action} ${node} ${end} ${edges}`;
+  }, [data]);
 
   return (
     <>
@@ -72,7 +98,7 @@ const DeleteModal = forwardRef(({ data, removeData }, ref) => {
           fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
-            Are you sure you want to remove these nodes and links?
+            Are you sure you want to remove these {title}?
           </DialogTitle>
           <DialogContent />
           <DialogActions>
