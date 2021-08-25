@@ -54,7 +54,6 @@ function NetWork() {
   };
 
   const handleDoubleClick = (params) => {
-    console.log(params);
     if (params?.edges.length === 1 && params?.nodes.length === 0) {
       setObjectActions({
         dataNode: { id: params.edges[0] },

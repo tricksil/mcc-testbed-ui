@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useContext,
   useEffect,
+  useCallback,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,7 +21,7 @@ import AsyncSelect from 'react-select/async';
 
 import axios from 'axios';
 
-import { ContainerSelect, colourStyles, Info } from './styles';
+import { ScenarioContent, Container } from './styles';
 import { ApiContext } from '~/context/ApiContext';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
@@ -39,13 +40,23 @@ const SearchModal = forwardRef((props, ref) => {
   const { convertionalScenaryToVis } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const [seleted, setSeleted] = useState({});
+  const [scenarios, setScenarios] = useState([]);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const history = useHistory();
 
+  const getScenarios = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://${ip}:5000/scenarios/list`);
+      setScenarios(response.data.scenarios);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [ip]);
+
   useEffect(() => {
-    setSeleted({});
-  }, []);
+    getScenarios();
+  }, [getScenarios]);
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -61,28 +72,29 @@ const SearchModal = forwardRef((props, ref) => {
     setSeleted({});
   };
 
-  const promiseOptions = async () => {
-    try {
-      const response = await axios.get(`http://${ip}:5000/scenarios/list`);
-      return response.data?.scenarios?.map((scenario) => ({
-        label: scenario.name,
-        value: scenario.configuration,
-      }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   function handleSuccess() {
-    console.log(seleted);
     if (!seleted) {
       snackBarOpen('Error getting scenario', 'error');
       return;
     }
-    convertionalScenaryToVis(JSON.stringify(seleted.value));
+    convertionalScenaryToVis(JSON.stringify(seleted.configuration));
     snackBarOpen('Successfully obtained scenario', 'success');
     history.push('/network');
   }
+
+  const renderScenarios = useCallback(
+    () =>
+      scenarios?.map((value) => (
+        <ScenarioContent
+          key={value.name}
+          onClick={() => setSeleted(value)}
+          select={value.name === seleted.name}
+        >
+          <p>{value.name}</p>
+        </ScenarioContent>
+      )),
+    [scenarios, seleted.name]
+  );
 
   return (
     <>
@@ -98,18 +110,7 @@ const SearchModal = forwardRef((props, ref) => {
             Search Scenarios
           </DialogTitle>
           <DialogContent>
-            <ContainerSelect>
-              <AsyncSelect
-                cacheOptions
-                defaultOptions
-                loadOptions={promiseOptions}
-                styles={colourStyles}
-                value={seleted}
-                onChange={(scenario) => setSeleted(scenario)}
-                placeholder="Select..."
-              />
-            </ContainerSelect>
-            {seleted?.value && <Info {...seleted.value} />}
+            <Container>{renderScenarios()}</Container>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">

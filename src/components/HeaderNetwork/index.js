@@ -42,7 +42,6 @@ function HeaderNetwork() {
     const sceneryTestbed = convertionalScenery(graph);
     try {
       snackBarOpen('Loading Scenery', 'info');
-      console.log(sceneryTestbed);
       const { data } = await axios.post(
         `http://${ip}:5000/create`,
         sceneryTestbed

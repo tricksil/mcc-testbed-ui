@@ -11,7 +11,6 @@ export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [isExecute, setExecute] = useState(false);
   const [name, onChangeName] = useState('');
-  console.log('Graph', name);
   function createNode(node) {
     setGraph((prevState) => ({
       ...prevState,

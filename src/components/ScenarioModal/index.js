@@ -34,29 +34,30 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
   const history = useHistory();
   const [error, setError] = useState(false);
 
+  function clearStates() {
+    setName('');
+    setError(false);
+    setOpen((x) => !x);
+    onClose();
+  }
+
   useImperativeHandle(ref, () => ({
     open: () => {
       setOpen((x) => !x);
     },
     close: () => {
       setOpen((x) => !x);
-      setName('');
       onClose();
     },
   }));
 
   const handleClose = () => {
-    setOpen((x) => !x);
-    setName('');
-    onClose();
+    clearStates();
   };
-
-  function clearStates() {
-    setOpen((x) => !x);
-  }
 
   const changeName = (event) => {
     setName(event.target.value);
+    setError(false);
   };
 
   const handleSubmitSave = async () => {
@@ -65,12 +66,10 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
       return;
     }
     onChangeName(name);
-
-    if (onSubmit) {
+    if (onSubmit() != null) {
       onSubmit();
       return;
     }
-
     history.push('/network');
   };
 
@@ -98,6 +97,7 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
               autoComplete="off"
               aria-autocomplete="none"
               placeholder="Enter the scenario name"
+              error={error}
             />
             {error && <Error>Field cannot be empty</Error>}
           </DialogContent>
