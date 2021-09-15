@@ -51,7 +51,9 @@ const ConfigModal = forwardRef((props, ref) => {
   };
 
   function clearStates() {
-    setOpen((x) => !x);
+    setConnected(false);
+    setError(false);
+    handleClose();
   }
 
   function handleChangeIp(event) {
@@ -80,7 +82,7 @@ const ConfigModal = forwardRef((props, ref) => {
 
   function handleSubmitSave() {
     changeIp(ip);
-    handleClose();
+    clearStates();
   }
 
   return (
@@ -108,20 +110,22 @@ const ConfigModal = forwardRef((props, ref) => {
               aria-autocomplete="none"
               placeholder="Enter the server IP"
             />
-            <Button
-              onClick={promiseOptions}
-              disabled={ip === ''}
-              color="primary"
-            >
-              Connection Test
-              {isLoading && (
-                <ActionContent>
-                  <Action loading={isLoading ? 1 : 0} />
-                </ActionContent>
-              )}
-            </Button>
-            {isConnected && <Success>Connected</Success>}
-            {error && <Error>Connection error</Error>}
+            <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+              <Button
+                onClick={promiseOptions}
+                disabled={ip === ''}
+                color="primary"
+              >
+                Connection Test
+                {isLoading && (
+                  <ActionContent>
+                    <Action loading={isLoading ? 1 : 0} />
+                  </ActionContent>
+                )}
+              </Button>
+              {isConnected && <Success>Connected</Success>}
+              {error && <Error>Connection error</Error>}
+            </div>
           </DialogContent>
           <DialogActions>
             <Button
@@ -138,6 +142,6 @@ const ConfigModal = forwardRef((props, ref) => {
   );
 });
 
-ConfigModal.displayName = 'VncMConfigModalodal';
+ConfigModal.displayName = 'ConfigModal';
 
 export default ConfigModal;

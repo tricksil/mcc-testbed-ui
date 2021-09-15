@@ -1,3 +1,4 @@
+import { Dialog } from '@material-ui/core';
 import styled, { css, keyframes } from 'styled-components';
 
 export const Container = styled.div`
@@ -89,4 +90,65 @@ export const Action = styled.span`
           animation: ${load} 1s infinite linear;
         `
       : ''}
+`;
+
+export const DialogCustom = styled(Dialog)`
+  .MuiDialog-paperFullWidth {
+    width: 100%;
+  }
+  .MuiDialog-paperWidthFalse {
+    max-width: 100%;
+  }
+  .MuiDialog-paperScrollPaper {
+    display: flex;
+    max-height: 100%;
+    flex-direction: column;
+  }
+  .MuiDialog-paper {
+    margin: 0;
+  }
+  .MuiDialog-paperFullWidth {
+    height: 100%;
+    width: 100%;
+  }
+  .MuiPaper-rounded {
+    border-radius: 0px;
+  }
+`;
+
+export const DialogTitleCustom = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 16px 24px;
+  justify-content: space-between;
+  align-items: center;
+  > button {
+    background: none;
+    border: none;
+    img {
+      width: 24px;
+      height: 24px;
+    }
+    cursor: pointer;
+  }
+`;
+
+export const GridContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const ButtonAdd = styled.button`
+  width: 100%;
+  max-width: 250px;
+  background-color: #312e38;
+  padding: 8px 8px;
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 `;

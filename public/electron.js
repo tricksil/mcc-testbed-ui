@@ -11,11 +11,13 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
     webPreferences: {
-      nodeIntegration: true,
+      sandbox: true,
+      nodeIntegration: false,
+      preload: path.join(app.getAppPath(), 'preload.js'),
     },
+    simpleFullscreen: true,
+    icon: `${__dirname}/logo.png`,
   });
 
   mainWindow.loadURL(
@@ -31,6 +33,9 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  mainWindow.maximize();
+  mainWindow.removeMenu();
 }
 
 app.on('ready', createWindow);

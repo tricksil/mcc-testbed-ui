@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   convertionalToTestbed,
@@ -11,6 +11,21 @@ export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [isExecute, setExecute] = useState(false);
   const [name, onChangeName] = useState('');
+
+  useEffect(() => {
+    const graphSave = async () => {
+      const getGraph = await JSON.parse(localStorage.getItem('graph'));
+      setGraph((x) => ({ x, ...getGraph }));
+    };
+    graphSave();
+  }, []);
+
+  console.log(graph);
+
+  useEffect(() => {
+    localStorage.setItem('graph', JSON.stringify(graph));
+  }, [graph]);
+
   function createNode(node) {
     setGraph((prevState) => ({
       ...prevState,

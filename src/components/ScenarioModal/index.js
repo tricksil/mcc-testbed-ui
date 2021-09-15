@@ -66,8 +66,7 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
       return;
     }
     onChangeName(name);
-    if (onSubmit() != null) {
-      onSubmit();
+    if (onSubmit() !== null) {
       return;
     }
     history.push('/network');

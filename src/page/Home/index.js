@@ -38,18 +38,18 @@ function Home() {
     setAction(null);
   }
 
-  async function openFile(evt) {
+  function openFile(evt) {
     const fileObj = evt.target.files[0];
     const reader = new FileReader();
 
-    await reader.addEventListener('load', (event) => {
+    reader.addEventListener('load', (event) => {
       const json = atob(event.target.result.substring(29));
       convertionalScenaryToVis(json);
       snackBarOpen('Updload success', 'success');
-      handleCreateScenery();
+      // handleCreateScenery();
       history.push('/network');
     });
-    await reader.readAsDataURL(fileObj);
+    reader.readAsDataURL(fileObj);
   }
 
   function handleUpload() {

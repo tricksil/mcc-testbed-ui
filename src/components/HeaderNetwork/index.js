@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-function */
 import { Link } from 'react-router-dom';
 import { useContext, useState, useRef } from 'react';
 
@@ -10,14 +11,16 @@ import {
   ActionContent,
   IconContent,
 } from './styles';
-import logo from '~/assets/cloud.svg';
+import logo from '~/assets/logo.svg';
 import execute from '~/assets/execute.svg';
 import stop from '~/assets/stop.svg';
 import save from '~/assets/save.svg';
+import app from '~/assets/android.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import { ApiContext } from '~/context/ApiContext';
 import ScenarioConfigModal from '../ScenarioConfigModal';
+import AppAreaModal from '../AppAreaModal';
 
 function HeaderNetwork() {
   const {
@@ -31,6 +34,7 @@ function HeaderNetwork() {
   const { ip } = useContext(ApiContext);
   const [isLoading, setLoading] = useState(false);
   const scenarioConfigRef = useRef();
+  const appAreaRef = useRef();
 
   async function handleExecScenery() {
     setLoading((x) => !x);
@@ -73,7 +77,9 @@ function HeaderNetwork() {
   }
   async function handleSaveScenario() {
     scenarioConfigRef.current?.open();
-    console.log('click');
+  }
+  async function handleAppArea() {
+    appAreaRef.current?.open();
   }
 
   return (
@@ -111,9 +117,18 @@ function HeaderNetwork() {
               Save
             </Button>
           )}
+          {isExecute && (
+            <Button type="button" onClick={handleAppArea}>
+              <IconContent>
+                <img src={app} alt="Save" />
+              </IconContent>
+              App Area
+            </Button>
+          )}
         </aside>
       </Content>
       <ScenarioConfigModal ref={scenarioConfigRef} />
+      <AppAreaModal ref={appAreaRef} />
     </Container>
   );
 }

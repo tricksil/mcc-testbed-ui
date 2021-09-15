@@ -70,7 +70,6 @@ const DeleteModal = forwardRef(({ data, removeData }, ref) => {
     return `${data.action} ${node} ${end} ${edges}`;
   }, [data]);
 
-  console.log(data);
   const title = useMemo(() => {
     if (Object.keys(data).length === 0) {
       return 'nodes and edges';

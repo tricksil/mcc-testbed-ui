@@ -1,3 +1,4 @@
+import { Dialog } from '@material-ui/core';
 import styled, { css, keyframes } from 'styled-components';
 
 export const Container = styled.div`
@@ -69,6 +70,36 @@ export const ActionContent = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 5px;
+`;
+
+export const DialogCustom = styled(Dialog)`
+  .MuiDialog-paperWidthSm {
+    max-width: 600px;
+    width: 100%;
+  }
+`;
+
+export const UploadApk = styled.div`
+  margin-top: 20px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+  width: 400px;
+  height: 200px;
+  > p {
+    color: ${(props) => (props.error ? '#cc2727' : 'black')};
+  }
+  border: 2px dashed ${(props) => (props.error ? '#cc2727' : 'gray')};
+  > img {
+    width: 120px;
+    height: 120px;
+  }
+  .hidden {
+    display: none;
+  }
 `;
 
 const load = keyframes`

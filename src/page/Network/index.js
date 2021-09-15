@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import VisNetworkReactComponent from 'vis-network-react';
 
@@ -32,6 +33,18 @@ function NetWork() {
   const history = useHistory();
   const [vncPort, setVncPort] = useState('');
   const { ip } = useContext(ApiContext);
+
+  async function handleStopScenery() {
+    try {
+      const { data } = await axios.get(`http://${ip}:5000/stop`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    handleStopScenery();
+  }, []);
 
   useEffect(
     () => () => {
