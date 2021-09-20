@@ -18,6 +18,7 @@ import axios from 'axios';
 import { TrafficOutlined } from '@material-ui/icons';
 import { Action, ActionContent, Success, Error } from './styles';
 import { ApiContext } from '~/context/ApiContext';
+import IpMaskInput from '../IpMaskInput';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -33,6 +34,7 @@ const ConfigModal = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const { ip: ipSave, changeIp } = useContext(ApiContext);
   const [ip, setIp] = useState(ipSave);
+  const [ipError, setIpError] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [isConnected, setConnected] = useState(false);
   const [error, setError] = useState(false);
@@ -59,7 +61,7 @@ const ConfigModal = forwardRef((props, ref) => {
   function handleChangeIp(event) {
     setIp(event.target.value);
   }
-
+  console.log(ip);
   async function promiseOptions() {
     setLoading(true);
     setConnected(false);
@@ -92,24 +94,17 @@ const ConfigModal = forwardRef((props, ref) => {
           open={open}
           aria-labelledby="customized-dialog-title"
           maxWidth="sm"
-          fullWidth
+          // fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
             Configuration
           </DialogTitle>
           <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Ip"
-              type="text"
-              fullWidth
+            <IpMaskInput
+              onChange={setIp}
               value={ip}
-              onChange={handleChangeIp}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the server IP"
+              error={ipError}
+              setError={setIpError}
             />
             <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
               <Button
@@ -134,7 +129,7 @@ const ConfigModal = forwardRef((props, ref) => {
               disabled={!isConnected}
               color="primary"
             >
-              Salve
+              Save
             </Button>
           </DialogActions>
         </Dialog>

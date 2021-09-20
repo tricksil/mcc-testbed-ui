@@ -369,7 +369,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
               color="primary"
               disabled={isDisabled}
             >
-              Salve
+              Execution
             </Button>
           </DialogActions>
         </Dialog>

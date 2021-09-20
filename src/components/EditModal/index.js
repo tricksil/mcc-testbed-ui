@@ -31,6 +31,7 @@ import switchDivice from '~/assets/switch.svg';
 import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
 import { emptyField } from '~/validation';
+import IpMaskInput from '../IpMaskInput';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditModal = forwardRef(({ data, removeData }, ref) => {
-  const { addNodeRandom, editNode, editEdge, findEdge, isExecute } = useContext(
+  const { addNodeRandom, editNode, editEdge, findEdge, graph } = useContext(
     GraphContext
   );
   const classes = useStyles();
@@ -53,7 +54,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [ip, setIp] = useState('');
   const [bandwidth, setBandwidth] = useState('');
   const [delay, setDelay] = useState('');
-  const [quantity, setQuantity] = useState(5);
+  const [quantity, setQuantity] = useState('5');
   const [bandwidthRandom, setBandwidthRandom] = useState('');
   const [delayRandom, setDelayRandom] = useState('');
   const [deviceCheckedError, setDeviceCheckedError] = useState(false);
@@ -199,8 +200,14 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       bandwidth: Number(bandwidthRandom),
       delay: `${delayRandom}ms`,
     };
-    const graph = DeviceFactory(node?.id, quantity, customEdge, customNode);
-    addNodeRandom(graph);
+    const graphRandom = DeviceFactory(
+      graph,
+      node?.id,
+      Number(quantity),
+      customEdge,
+      customNode
+    );
+    addNodeRandom(graphRandom);
     removeData();
   }
 
@@ -208,7 +215,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     setChecked(false);
     setDelayRandom('');
     setBandwidthRandom('');
-    setQuantity(5);
+    setQuantity('5');
     setDelay('');
     setBandwidth('');
     setName('');
@@ -385,18 +392,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           aria-autocomplete="none"
           error={nameError}
         />
-        <TextField
-          autoFocus
-          margin="dense"
-          id="ip"
-          label="Ip Address"
-          type="text"
-          autoComplete="off"
-          fullWidth
+        <IpMaskInput
+          onChange={setIp}
           value={ip}
-          onChange={handleChangeIp}
-          aria-autocomplete="none"
           error={ipError}
+          setError={setIpError}
         />
       </>
     );

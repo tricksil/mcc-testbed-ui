@@ -18,7 +18,7 @@ function Home() {
   const configRef = useRef();
   const scenarioRef = useRef();
   const history = useHistory();
-  const { convertionalScenaryToVis } = useContext(GraphContext);
+  const { convertionalScenaryToVis, setGraph } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
   const [action, setAction] = useState(null);
@@ -30,6 +30,7 @@ function Home() {
   }, [ip]);
 
   function handleCreateScenery() {
+    setGraph({ nodes: [], edges: [] });
     scenarioRef.current?.open();
   }
 

@@ -27,11 +27,45 @@ export function createDimage() {
     return `renanalves/server-testbed`;
   };
 }
-export function DeviceFactory(nodeConnect, quantity, customEdge, customNode) {
+
+function hasIps(graphs) {
+  return graphs.nodes
+    .filter((node) => node.type === 'client' || node.type === 'server')
+    .map((node) => node.ip);
+}
+
+function ipRandom(graphs, ipsSelected) {
+  let ipChoose = null;
+  const ipsGraphs = hasIps(graphs);
+  const ipsExists = [...ipsGraphs, ...ipsSelected];
+
+  ipChoose = Math.floor(Math.random() * 255);
+
+  while (ipsExists.includes(ipChoose)) {
+    ipChoose = Math.floor(Math.random() * 255);
+  }
+
+  return `10.0.0.${ipChoose}`;
+}
+
+export function ipExist(ip, graphs) {
+  const ipsGraphs = hasIps(graphs);
+  return ipsGraphs.includes(ip);
+}
+export function DeviceFactory(
+  graphs,
+  nodeConnect,
+  quantity,
+  customEdge,
+  customNode
+) {
+  const ipsSelected = [];
   const nodes = new Array(quantity).fill().map((value) => {
     const name = createName()(customNode.type);
     const dimage = createDimage()(customNode.type);
-    const ip = faker.internet.ip();
+    const ip = ipRandom(graphs, ipsSelected);
+    console.log(ip);
+    ipsSelected.push(ip);
     return {
       ...value,
       ...customNode,

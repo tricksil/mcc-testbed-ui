@@ -171,7 +171,7 @@ const AddAppModal = forwardRef((props, ref) => {
               Cancel
             </Button>
             <Button onClick={handleSubmitSave} color="primary">
-              Salve
+              Save
             </Button>
           </DialogActions>
         </Dialog>

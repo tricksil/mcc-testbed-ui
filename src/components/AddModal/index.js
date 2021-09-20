@@ -26,9 +26,10 @@ import {
 import phone from '~/assets/phone.svg';
 import server from '~/assets/server.svg';
 import switchDivice from '~/assets/switch.svg';
-import { createDimage, DeviceFactory } from '~/helpers/deviceFactory';
+import { createDimage } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
-import { emptyField } from '~/validation';
+import { emptyField, ipExistInNode } from '~/validation';
+import IpMaskInput from '../IpMaskInput';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AddModal = forwardRef(({ data, removeData }, ref) => {
-  const { createNode, createEdge } = useContext(GraphContext);
+  const { createNode, createEdge, graph } = useContext(GraphContext);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [device, setDevice] = useState('');
@@ -184,7 +185,7 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       invalid = true;
     }
 
-    if (emptyField(ip)) {
+    if (emptyField(ip) || ipExistInNode(ip, graph)) {
       setIpError(true);
       invalid = true;
     }
@@ -263,18 +264,12 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
 
         {device && device !== switchDivice && (
           <>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="ip"
-              label="Ip Address"
-              type="text"
-              autoComplete="off"
-              fullWidth
+            <IpMaskInput
+              onChange={setIp}
               value={ip}
-              onChange={handleChangeIp}
-              aria-autocomplete="none"
               error={ipError}
+              setError={setIpError}
+              rangerAdd
             />
           </>
         )}
