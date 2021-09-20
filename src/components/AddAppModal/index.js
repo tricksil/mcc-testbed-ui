@@ -10,8 +10,12 @@ import {
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
-import { DropzoneArea } from 'material-ui-dropzone';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@material-ui/core';
 
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
@@ -123,11 +127,12 @@ const AddAppModal = forwardRef((props, ref) => {
   return (
     <>
       {open && (
-        <DialogCustom
+        <Dialog
           open={open}
           onClose={handleClose}
           aria-labelledby="customized-dialog-title"
           maxWidth="sm"
+          fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
             Add Apk
@@ -169,7 +174,7 @@ const AddAppModal = forwardRef((props, ref) => {
               Salve
             </Button>
           </DialogActions>
-        </DialogCustom>
+        </Dialog>
       )}
     </>
   );

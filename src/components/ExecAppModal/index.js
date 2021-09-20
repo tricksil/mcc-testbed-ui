@@ -26,6 +26,8 @@ import axios from 'axios';
 
 import { ApiContext } from '~/context/ApiContext';
 import { SnackbarContext } from '~/context/SnackContext';
+import { GraphContext } from '~/context/GraphContext';
+import { execStatus } from '~/services/execApp';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -48,11 +50,13 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   const [runActivity, setRunActivity] = useState(
     'com.example.renan.kotlinmpos/.MainActivity'
   );
-  const [extras, setExtras] = useState('');
+  const [extras, setExtras] = useState('--es cloudlet 10.0.0.12');
   const [broadcastSignal, setBroadcasSignal] = useState(
     'com.example.renan.kotlinmpos.EXTRAS'
   );
-  const [argumentsExec, setArgumentsExec] = useState('');
+  const [argumentsExec, setArgumentsExec] = useState(
+    "--es 'operation' 'mul' --ei 'size' 600"
+  );
   const [interactions, setInteractions] = useState('2');
   const [appNameError, setAppNameError] = useState(false);
   const [logTagError, setLogTagError] = useState(false);
@@ -61,6 +65,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   const [broadcastSignalError, setBroadcasSignalError] = useState(false);
   const [interactionsError, setInteractionsError] = useState(false);
   const [isDisabled, setDisabled] = useState(false);
+  const { setExecApkStatus } = useContext(GraphContext);
   const { ip } = useContext(ApiContext);
   const { snackBarOpen } = useContext(SnackbarContext);
 
@@ -93,7 +98,10 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => getAllApk(), []);
+  useEffect(() => {
+    if (open) getAllApk();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   function handleChangeAppName(event) {
     const appNameChange = event.target.value.trim();
@@ -198,6 +206,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
       };
       console.log(data);
       const response = await axios.post(`http://${ip}:5000/exec`, data);
+      await execStatus(ip, setExecApkStatus);
       console.log(response);
       snackBarOpen('Successful Exec Apk.', 'success');
     } catch (err) {
@@ -244,7 +253,9 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
                 error={appNameError}
               >
                 {appList?.map((value) => (
-                  <MenuItem value={value}>{value}</MenuItem>
+                  <MenuItem key={value} value={value}>
+                    {value}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -346,7 +357,11 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="secundary">
+            <Button
+              onClick={handleClose}
+              color="secundary"
+              disabled={isDisabled}
+            >
               Cancel
             </Button>
             <Button

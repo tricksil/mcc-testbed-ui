@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchModal = forwardRef((props, ref) => {
   const { ip } = useContext(ApiContext);
-  const { convertionalScenaryToVis } = useContext(GraphContext);
+  const { convertionalScenaryToVis, onChangeName } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const [seleted, setSeleted] = useState({});
   const [scenarios, setScenarios] = useState([]);
@@ -55,8 +55,8 @@ const SearchModal = forwardRef((props, ref) => {
   }, [ip]);
 
   useEffect(() => {
-    getScenarios();
-  }, [getScenarios]);
+    if (open) getScenarios();
+  }, [open, getScenarios]);
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -77,6 +77,7 @@ const SearchModal = forwardRef((props, ref) => {
       snackBarOpen('Error getting scenario', 'error');
       return;
     }
+    onChangeName(seleted.name);
     convertionalScenaryToVis(JSON.stringify(seleted.configuration));
     snackBarOpen('Successfully obtained scenario', 'success');
     history.push('/network');

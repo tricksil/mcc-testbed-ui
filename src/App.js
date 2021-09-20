@@ -1,4 +1,4 @@
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, HashRouter } from 'react-router-dom';
 import GlobalStyles from '~/styles/global';
 import { GraphProvider } from '~/context/GraphContext';
 import { SnackbarProvider } from '~/context/SnackContext';
@@ -10,9 +10,9 @@ function App() {
     <ApiProvider>
       <GraphProvider>
         <SnackbarProvider>
-          <Router>
+          <HashRouter>
             <Routes />
-          </Router>
+          </HashRouter>
           <GlobalStyles />
         </SnackbarProvider>
       </GraphProvider>

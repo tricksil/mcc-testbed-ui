@@ -91,7 +91,8 @@ const ConfigModal = forwardRef((props, ref) => {
         <Dialog
           open={open}
           aria-labelledby="customized-dialog-title"
-          maxWidth="md"
+          maxWidth="sm"
+          fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
             Configuration

@@ -1,5 +1,7 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+
 import {
   convertionalToTestbed,
   convertionalToVis,
@@ -11,20 +13,25 @@ export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [isExecute, setExecute] = useState(false);
   const [name, onChangeName] = useState('');
+  const [execApkStatus, setExecApkStatus] = useState('');
 
   useEffect(() => {
     const graphSave = async () => {
       const getGraph = await JSON.parse(localStorage.getItem('graph'));
+      const getName = await JSON.parse(localStorage.getItem('name'));
       setGraph((x) => ({ x, ...getGraph }));
+      onChangeName(getName);
     };
     graphSave();
   }, []);
 
-  console.log(graph);
-
   useEffect(() => {
     localStorage.setItem('graph', JSON.stringify(graph));
   }, [graph]);
+
+  useEffect(() => {
+    localStorage.setItem('name', JSON.stringify(name));
+  }, [name]);
 
   function createNode(node) {
     setGraph((prevState) => ({
@@ -124,6 +131,16 @@ export function GraphProvider({ children }) {
     }));
   }
 
+  const isDisableBecauseExecApp = useMemo(() => {
+    switch (execApkStatus) {
+      case 'EXECUTING':
+        return true;
+
+      default:
+        return false;
+    }
+  }, [execApkStatus]);
+
   return (
     <GraphContext.Provider
       value={{
@@ -145,6 +162,9 @@ export function GraphProvider({ children }) {
         setExecute,
         name,
         onChangeName,
+        execApkStatus,
+        setExecApkStatus,
+        isDisableBecauseExecApp,
       }}
     >
       {children}

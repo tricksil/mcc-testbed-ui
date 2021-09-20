@@ -26,15 +26,21 @@ function NetWork() {
   const editModalRef = useRef();
   const deleteModalRef = useRef();
   const vncModalRef = useRef();
-  const { graph, isExecute, isSmartphone, setGraph, findNode } = useContext(
-    GraphContext
-  );
+  const {
+    graph,
+    isExecute,
+    isSmartphone,
+    setGraph,
+    findNode,
+    setExecute,
+  } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const history = useHistory();
   const [vncPort, setVncPort] = useState('');
   const { ip } = useContext(ApiContext);
 
   async function handleStopScenery() {
+    setExecute(false);
     try {
       const { data } = await axios.get(`http://${ip}:5000/stop`);
     } catch (error) {

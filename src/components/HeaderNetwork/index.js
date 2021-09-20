@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-empty-function */
 import { Link } from 'react-router-dom';
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState, useRef, useEffect } from 'react';
 
 import axios from 'axios';
 import {
@@ -21,6 +22,7 @@ import { SnackbarContext } from '~/context/SnackContext';
 import { ApiContext } from '~/context/ApiContext';
 import ScenarioConfigModal from '../ScenarioConfigModal';
 import AppAreaModal from '../AppAreaModal';
+import { execStatus } from '~/services/execApp';
 
 function HeaderNetwork() {
   const {
@@ -29,12 +31,42 @@ function HeaderNetwork() {
     isExecute,
     setExecute,
     setGraph,
+    execApkStatus,
+    isDisableBecauseExecApp,
+    setExecApkStatus,
+    onChangeName,
   } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
   const [isLoading, setLoading] = useState(false);
   const scenarioConfigRef = useRef();
   const appAreaRef = useRef();
+
+  async function handleExecStatus() {
+    await execStatus(ip, setExecApkStatus);
+  }
+
+  useEffect(() => {
+    if (isExecute) {
+      handleExecStatus();
+    }
+  }, [isExecute]);
+
+  useEffect(() => {
+    let timer = null;
+    if (execApkStatus !== 'EXECUTING') {
+      clearInterval(timer);
+    }
+    if (execApkStatus === 'EXECUTING') {
+      timer = setInterval(() => {
+        handleExecStatus();
+      }, 10000);
+    }
+    return () => {
+      console.log('clean interval');
+      clearInterval(timer);
+    };
+  }, [execApkStatus]);
 
   async function handleExecScenery() {
     setLoading((x) => !x);
@@ -62,6 +94,7 @@ function HeaderNetwork() {
       setLoading((x) => !x);
     }
   }
+
   async function handleStopScenery() {
     setLoading((x) => !x);
     snackBarOpen('Loading Stop Scenery', 'info');
@@ -82,11 +115,16 @@ function HeaderNetwork() {
     appAreaRef.current?.open();
   }
 
+  function handleBack() {
+    setGraph({ nodes: [], edges: [] });
+    onChangeName('');
+  }
+
   return (
     <Container>
       <Content>
         <nav>
-          <Link to="/" onClick={() => setGraph({ nodes: [], edges: [] })}>
+          <Link to="/" onClick={handleBack}>
             <img src={logo} alt="MCC Network" />
           </Link>
         </nav>
@@ -118,9 +156,13 @@ function HeaderNetwork() {
             </Button>
           )}
           {isExecute && (
-            <Button type="button" onClick={handleAppArea}>
+            <Button
+              type="button"
+              onClick={handleAppArea}
+              disabled={isDisableBecauseExecApp}
+            >
               <IconContent>
-                <img src={app} alt="Save" />
+                <img src={app} alt="App Area" />
               </IconContent>
               App Area
             </Button>
