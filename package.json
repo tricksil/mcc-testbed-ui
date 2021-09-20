@@ -1,7 +1,7 @@
 {
   "name": "mcc-testbed",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "author": "Patrick Silva <patrickeeep12@gmail.com>",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
