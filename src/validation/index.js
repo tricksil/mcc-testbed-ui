@@ -1,4 +1,4 @@
-import { ipExist } from '~/helpers/deviceFactory';
+import { ipExist, nameExist } from '~/helpers/deviceFactory';
 
 export function emptyField(value) {
   return (
@@ -7,4 +7,7 @@ export function emptyField(value) {
 }
 export function ipExistInNode(ip, graph) {
   return ipExist(ip, graph);
+}
+export function nameExistInNode(name, graph) {
+  return nameExist(name, graph);
 }

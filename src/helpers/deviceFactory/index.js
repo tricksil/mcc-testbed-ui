@@ -11,10 +11,35 @@ export function removeSymbols(symbols) {
   };
 }
 
-function createName() {
+function hasNames(graphs) {
+  return graphs.nodes
+    .filter((node) => node.type === 'client' || node.type === 'server')
+    .map((node) => node.label);
+}
+
+function nameType(type) {
+  return type === 'client' ? faker.name.firstName() : faker.random.word();
+}
+
+function nameRandom(graphs, namesSelected) {
   return function (type) {
-    const name =
-      type === 'client' ? faker.name.firstName() : faker.random.word();
+    let nameChoose = null;
+    const namesGraphs = hasNames(graphs);
+    const ipsExists = [...namesGraphs, ...namesSelected];
+
+    nameChoose = nameType(type);
+
+    while (ipsExists.includes(nameChoose)) {
+      nameChoose = nameType(type);
+    }
+
+    return nameChoose;
+  };
+}
+
+function createName(graphs, namesSelected) {
+  return function (type) {
+    const name = nameRandom(graphs, namesSelected)(type);
     return removeSymbols(symbolsArray)(name).toLowerCase();
   };
 }
@@ -52,6 +77,11 @@ export function ipExist(ip, graphs) {
   const ipsGraphs = hasIps(graphs);
   return ipsGraphs.includes(ip);
 }
+
+export function nameExist(name, graphs) {
+  const namesGraphs = hasNames(graphs);
+  return namesGraphs.includes(name);
+}
 export function DeviceFactory(
   graphs,
   nodeConnect,
@@ -60,11 +90,11 @@ export function DeviceFactory(
   customNode
 ) {
   const ipsSelected = [];
+  const namesSelected = [];
   const nodes = new Array(quantity).fill().map((value) => {
-    const name = createName()(customNode.type);
+    const name = createName(graphs, namesSelected)(customNode.type);
     const dimage = createDimage()(customNode.type);
     const ip = ipRandom(graphs, ipsSelected);
-    console.log(ip);
     ipsSelected.push(ip);
     return {
       ...value,

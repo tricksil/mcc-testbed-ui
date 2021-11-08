@@ -19,7 +19,7 @@ export function GraphProvider({ children }) {
     const graphSave = async () => {
       const getGraph = await JSON.parse(localStorage.getItem('graph'));
       const getName = await JSON.parse(localStorage.getItem('name'));
-      setGraph((x) => ({ x, ...getGraph }));
+      setGraph((x) => ({ ...x, ...getGraph }));
       onChangeName(getName);
     };
     graphSave();
