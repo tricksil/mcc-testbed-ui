@@ -97,7 +97,7 @@ const ConfigModal = forwardRef((props, ref) => {
           // fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
-            Configuration
+            Server Configuration
           </DialogTitle>
           <DialogContent>
             <IpMaskInput
