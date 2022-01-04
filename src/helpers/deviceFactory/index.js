@@ -12,9 +12,9 @@ export function removeSymbols(symbols) {
 }
 
 function hasNames(graphs) {
-  return graphs.nodes
-    .filter((node) => node.type === 'client' || node.type === 'server')
-    .map((node) => node.label);
+  return graphs?.nodes
+    ?.filter((node) => node.type === 'client' || node.type === 'server')
+    ?.map((node) => node.label);
 }
 
 function nameType(type) {
@@ -80,7 +80,7 @@ export function ipExist(ip, graphs) {
 
 export function nameExist(name, graphs) {
   const namesGraphs = hasNames(graphs);
-  return namesGraphs.includes(name);
+  return namesGraphs?.includes(name);
 }
 export function DeviceFactory(
   graphs,

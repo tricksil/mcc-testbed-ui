@@ -156,11 +156,7 @@ function HeaderNetwork() {
             </Button>
           )}
           {isExecute && (
-            <Button
-              type="button"
-              onClick={handleAppArea}
-              disabled={isDisableBecauseExecApp}
-            >
+            <Button type="button" onClick={handleAppArea} disabled={false}>
               <IconContent>
                 <img src={app} alt="App Area" />
               </IconContent>

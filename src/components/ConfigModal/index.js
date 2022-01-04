@@ -129,6 +129,13 @@ const ConfigModal = forwardRef((props, ref) => {
               disabled={!isConnected}
               color="primary"
             >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitSave}
+              disabled={!isConnected}
+              color="primary"
+            >
               Save
             </Button>
           </DialogActions>

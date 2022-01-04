@@ -30,7 +30,7 @@ import server from '~/assets/server.svg';
 import switchDivice from '~/assets/switch.svg';
 import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
-import { emptyField } from '~/validation';
+import { emptyField, ipIncomplete } from '~/validation';
 import IpMaskInput from '../IpMaskInput';
 
 const useStyles = makeStyles((theme) => ({
@@ -52,8 +52,10 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [deviceChecked, setDeviceChecked] = useState('');
   const [name, setName] = useState('');
   const [ip, setIp] = useState('');
+  const [ipCache, setIpCache] = useState('');
   const [bandwidth, setBandwidth] = useState('');
   const [delay, setDelay] = useState('');
+  const [jitter, setJitter] = useState('');
   const [quantity, setQuantity] = useState('5');
   const [bandwidthRandom, setBandwidthRandom] = useState('');
   const [delayRandom, setDelayRandom] = useState('');
@@ -62,6 +64,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [ipError, setIpError] = useState(false);
   const [bandwidthError, setBandwidthError] = useState(false);
   const [delayError, setDelayError] = useState(false);
+  const [jitterError, setJitterError] = useState(false);
   const [quantityError, setQuantityError] = useState(false);
   const [bandwidthRandomError, setBandwidthRandomError] = useState(false);
   const [delayRandomError, setDelayRandomError] = useState(false);
@@ -86,7 +89,10 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       const { label, image, ip: ipNode } = data.dataNode;
       setName(label);
       setDevice(image);
-      if (ipNode) setIp(ipNode);
+      if (ipNode) {
+        setIp(ipNode);
+        setIpCache(ipNode);
+      }
     }
     if (data.action === 'edit' && data.type === 'edge') {
       const edge = findEdge(data.dataNode.id);
@@ -120,6 +126,14 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     setDelay(value);
     if (value) {
       setDelayError(false);
+    }
+  };
+
+  const handleChangeJitter = (event) => {
+    const value = event.target.value.replace(/\D/g, '');
+    setJitter(value);
+    if (value) {
+      setJitterError(false);
     }
   };
   const handleChangeQuantity = (event) => {
@@ -170,6 +184,8 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       label: name,
       bandwidth: Number(bandwidth),
       delay: `${delay}ms`,
+      jitter: `${jitter}ms`,
+      title: `<p>Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}</p>`,
     };
     editEdge(customEdge);
     removeData();
@@ -179,9 +195,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     const customNode = {
       ...node,
       label: name,
+      title: `Name: ${name}`,
     };
     if (device !== switchDivice) {
       customNode.ip = ip;
+      customNode.title = `${customNode.title}<br>IP: ${ip}`;
       setIp('');
     }
     editNode(customNode);
@@ -256,6 +274,10 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
         setIpError(true);
         invalid = true;
       }
+      if (ipIncomplete(ip)) {
+        setIpError(true);
+        invalid = true;
+      }
     }
 
     if (device === switchDivice) {
@@ -289,6 +311,10 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
 
     if (emptyField(delay)) {
       setDelayError(true);
+      invalid = true;
+    }
+    if (emptyField(jitter)) {
+      setJitterError(true);
       invalid = true;
     }
 
@@ -397,11 +423,12 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           value={ip}
           error={ipError}
           setError={setIpError}
+          block
+          ipCache={ipCache}
         />
       </>
     );
   }
-
   function renderNode() {
     return (
       <>
@@ -423,7 +450,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
 
         {device && device !== switchDivice && renderNodeOptions()}
 
-        {data.dataNode.type === 'switch' && (
+        {data.dataNode.type !== 'client' && (
           <FormGroup>
             <FormControlLabel
               control={
@@ -471,6 +498,18 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           autoComplete="off"
           aria-autocomplete="none"
           error={delayError}
+        />
+        <TextField
+          margin="dense"
+          id="jitter"
+          label="Jitter(ms)"
+          type="text"
+          fullWidth
+          value={jitter}
+          onChange={handleChangeJitter}
+          autoComplete="off"
+          aria-autocomplete="none"
+          error={jitterError}
         />
         <TextField
           margin="dense"

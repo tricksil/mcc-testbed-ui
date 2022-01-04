@@ -11,7 +11,15 @@ import { Container, IpContent, Input, Error } from './styles';
 import { GraphContext } from '~/context/GraphContext';
 import { ipExist } from '~/helpers/deviceFactory';
 
-const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
+const IpMaskInput = ({
+  onChange,
+  value,
+  error,
+  setError,
+  rangerAdd,
+  block,
+  ipCache,
+}) => {
   const { graph } = useContext(GraphContext);
   const [field1, setField1] = useState('');
   const [field2, setField2] = useState('');
@@ -22,7 +30,7 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
   const field3Ref = useRef(null);
   const field4Ref = useRef(null);
   const [finalValue, setFinalValue] = useState('');
-  const [firstUpdateValue, setFirstUpdateValue] = useState(true);
+  const [updateValue, setUpdateValue] = useState(true);
   const [ipExistError, setIpExistError] = useState(false);
 
   const formatIp = (fieldValue1, fieldValue2, fieldValue3, fieldValue4) => {
@@ -49,19 +57,20 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
         setIpExistError(true);
         return true;
       }
+      setIpExistError(false);
       if (fieldValue1 && fieldValue2 && fieldValue3 && fieldValue4)
         return false;
-      setIpExistError(false);
+      if (updateValue && !fieldValue4) {
+        return false;
+      }
 
       return true;
     },
-    [graph]
+    [graph, updateValue]
   );
 
-  console.log();
-
   useEffect(() => {
-    if (firstUpdateValue) {
+    if (updateValue) {
       if (rangerAdd) {
         setField1('10');
         setField2('0');
@@ -74,19 +83,34 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
         setField2(values[1]);
         setField3(values[2]);
         setField4(values[3]);
-        setFirstUpdateValue((x) => !x);
+        setUpdateValue((x) => !x);
       }
     }
-  }, [firstUpdateValue, value, rangerAdd]);
+  }, [updateValue, value, rangerAdd]);
 
   useEffect(() => {
     onChange(formatIp(field1, field2, field3, field4));
   }, [field1, field2, field3, field4, onChange]);
 
   useEffect(() => {
+    if (block && ipCache === formatIp(field1, field2, field3, field4)) {
+      setIpExistError(false);
+      setError(false);
+      return;
+    }
     const valid = validationIpValue(field1, field2, field3, field4);
+    console.log('valid', valid);
     setError(valid);
-  }, [field1, field2, field3, field4, setError, validationIpValue]);
+  }, [
+    field1,
+    field2,
+    field3,
+    field4,
+    setError,
+    validationIpValue,
+    block,
+    ipCache,
+  ]);
 
   const validation = (fieldValue) => {
     if (Number(fieldValue) >= 0 && Number(fieldValue) <= 255) return true;
@@ -126,6 +150,8 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
       setFinalValue(`${field4}.${field4}.${field4}.${field4}`);
   };
 
+  console.log(error);
+
   return (
     <Container>
       <h4>Ip</h4>
@@ -144,7 +170,7 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
           inputProps={{ maxLength: 3 }}
           onKeyDown={hadleKeyPressField1}
           error={error}
-          disabled={rangerAdd}
+          disabled={rangerAdd || block}
         />
         <span>.</span>
         <Input
@@ -160,7 +186,7 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
           inputProps={{ maxLength: 3 }}
           onKeyDown={hadleKeyPressField2}
           error={error}
-          disabled={rangerAdd}
+          disabled={rangerAdd || block}
         />
         <span>.</span>
         <Input
@@ -176,7 +202,7 @@ const IpMaskInput = ({ onChange, value, error, setError, rangerAdd }) => {
           inputProps={{ maxLength: 3 }}
           onKeyDown={hadleKeyPressField3}
           error={error}
-          disabled={rangerAdd}
+          disabled={rangerAdd || block}
         />
         <span>.</span>
         <Input

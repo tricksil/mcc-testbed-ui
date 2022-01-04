@@ -21,6 +21,7 @@ export function convertionalToTestbed(graphs) {
     from: edge.from,
     to: edge.to,
     delay: edge.delay,
+    jitter: edge.delay,
     bw: edge.bandwidth,
   }));
 
@@ -64,6 +65,7 @@ export function convertionalToVis(testbed) {
     from: link.from,
     to: link.to,
     delay: link.delay,
+    jitter: link.jitter,
     bandwidth: link.bw,
     title: `<p>Delay: ${link.delay}<br>Bandwidth: ${link.bw}</p>`,
   }));

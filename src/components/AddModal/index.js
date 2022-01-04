@@ -28,7 +28,12 @@ import server from '~/assets/server.svg';
 import switchDivice from '~/assets/switch.svg';
 import { createDimage } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
-import { emptyField, ipExistInNode } from '~/validation';
+import {
+  emptyField,
+  ipExistInNode,
+  ipIncomplete,
+  nameExistInNode,
+} from '~/validation';
 import IpMaskInput from '../IpMaskInput';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,11 +54,13 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
   const [ip, setIp] = useState('');
   const [bandwidth, setBandwidth] = useState('');
   const [delay, setDelay] = useState('');
+  const [jitter, setJitter] = useState('');
   const [deviceError, setDeviceError] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [ipError, setIpError] = useState(false);
   const [bandwidthError, setBandwidthError] = useState(false);
   const [delayError, setDelayError] = useState(false);
+  const [jitterError, setJitterError] = useState(false);
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -66,11 +73,13 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
 
   function clearStates() {
     setDelay('');
+    setJitter('');
     setBandwidth('');
     setName('');
     setDevice('');
     setIp('');
     setDelayError(false);
+    setJitterError(false);
     setBandwidthError(false);
     setNameError(false);
     setDeviceError(false);
@@ -105,6 +114,14 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
     }
   };
 
+  const handleChangeJitter = (event) => {
+    const value = event.target.value.replace(/\D/g, '');
+    setJitter(value);
+    if (value) {
+      setDelayError(false);
+    }
+  };
+
   const handleChangeBandwidth = (event) => {
     const value = event.target.value.replace(/\D/g, '');
     setBandwidth(value);
@@ -130,7 +147,8 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       label: name,
       bandwidth: Number(bandwidth),
       delay: `${delay}ms`,
-      title: `<p>Delay: ${delay}ms<br>Bandwidth: ${bandwidth}</p>`,
+      jitter: `${jitter}ms`,
+      title: `<p>Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}</p>`,
     };
     createEdge(customEdge);
     removeData();
@@ -185,7 +203,12 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       invalid = true;
     }
 
-    if (emptyField(ip) || ipExistInNode(ip, graph)) {
+    if (nameExistInNode(name)) {
+      setNameError(true);
+      invalid = true;
+    }
+    console.log('ip', ipIncomplete(ip));
+    if (emptyField(ip) || ipExistInNode(ip, graph) || ipIncomplete(ip)) {
       setIpError(true);
       invalid = true;
     }
@@ -202,6 +225,11 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
 
     if (emptyField(delay)) {
       setDelayError(true);
+      invalid = true;
+    }
+
+    if (emptyField(jitter)) {
+      setJitterError(true);
       invalid = true;
     }
 
@@ -303,6 +331,18 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
           autoComplete="off"
           aria-autocomplete="none"
           error={delayError}
+        />
+        <TextField
+          margin="dense"
+          id="jitter"
+          label="Jitter(ms)"
+          type="text"
+          fullWidth
+          value={jitter}
+          onChange={handleChangeJitter}
+          autoComplete="off"
+          aria-autocomplete="none"
+          error={jitterError}
         />
         <TextField
           margin="dense"
