@@ -32,14 +32,14 @@
   },
   "description": "A test tool for Mobile Cloud Computing",
   "main": "public/main.js",
-  "homepage": "./*",
+  "homepage": "./",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && GH_TOKEN=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 electron-builder -c.extraMetadata.main=build/main.js --publish always",
+    "electron:build": "yarn build && GH_TOKEN=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 electron-builder -c.extraMetadata.main=build/main.js --publish always",
     "electron:start": "wait-on http://localhost:3000 && electron ."
   },
   "build": {
