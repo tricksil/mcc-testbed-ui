@@ -57,6 +57,8 @@ components.BoardButton = styled.button`
   border-radius: 32px;
   padding: 12px 24px;
 
+  width: 100%;
+
   color: #ffffff;
   font-weight: bold;
   font-size: 18px;

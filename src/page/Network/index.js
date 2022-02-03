@@ -141,6 +141,9 @@ function NetWork() {
   const handleModalRemove = () => {
     network.deleteSelected();
   };
+  const handleModalRemoveAll = () => {
+    setGraph({ nodes: [], edges: [] });
+  };
 
   const getPortVnc = useCallback(
     async (node) => {
@@ -214,7 +217,8 @@ function NetWork() {
     (
       handleModalCallback,
       handleModalEdgeCallback,
-      handleModalRemoveCallback
+      handleModalRemoveCallback,
+      handleModalRemoveAllCallback
     ) => {
       if (isExecute) return <></>;
       return (
@@ -231,6 +235,10 @@ function NetWork() {
             <img src={removeImage} alt="Add" />
             delete
           </Button>
+          <Button onClick={handleModalRemoveAllCallback}>
+            <img src={removeImage} alt="Add" />
+            clear scenario
+          </Button>
         </ButtonGroup>
       );
     },
@@ -240,7 +248,12 @@ function NetWork() {
   const { events, options } = state;
   return (
     <Container>
-      {buttonsOptions(handleModal, handleModalEdge, handleModalRemove)}
+      {buttonsOptions(
+        handleModal,
+        handleModalEdge,
+        handleModalRemove,
+        handleModalRemoveAll
+      )}
       <VisNetworkReactComponent
         data={graph}
         options={options}

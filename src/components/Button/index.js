@@ -9,6 +9,7 @@ export const Button = styled.button`
   background-color: #28262e;
   color: #fff;
   text-transform: capitalize;
+  /* font-size: 12px; */
 
   display: flex;
   justify-content: center;
@@ -27,5 +28,6 @@ export const Button = styled.button`
   &:hover {
     background-color: rgba(40, 38, 46, 0.5);
     color: #28262e;
+    font-weight: bold;
   }
 `;

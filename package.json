@@ -17,6 +17,8 @@
     "history": "^5.0.1",
     "internal-ip": "^6.2.0",
     "ip": "^1.1.5",
+    "is-electron": "^2.2.1",
+    "os-utils": "^0.0.14",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -39,12 +41,18 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && GH_TOKEN= electron-builder -c.extraMetadata.main=build/main.js --publish always",
+    "electron:build": "yarn build && GH_TOKEN=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 electron-builder -c.extraMetadata.main=build/main.js --publish always",
     "electron:start": "wait-on http://localhost:3000 && electron ."
   },
   "build": {
     "productName": "MCC Testbed",
     "appId": "com.tcc.mcc",
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "Development"
+    },
     "linux": {
       "target": [
         "deb"

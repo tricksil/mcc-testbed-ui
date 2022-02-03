@@ -58,6 +58,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [jitter, setJitter] = useState('');
   const [quantity, setQuantity] = useState('5');
   const [bandwidthRandom, setBandwidthRandom] = useState('');
+  const [jitterRandom, setJitterRandom] = useState('');
   const [delayRandom, setDelayRandom] = useState('');
   const [deviceCheckedError, setDeviceCheckedError] = useState(false);
   const [nameError, setNameError] = useState(false);
@@ -68,6 +69,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [quantityError, setQuantityError] = useState(false);
   const [bandwidthRandomError, setBandwidthRandomError] = useState(false);
   const [delayRandomError, setDelayRandomError] = useState(false);
+  const [jitterRandomError, setJitterRandomError] = useState(false);
 
   const [checked, setChecked] = useState(false);
 
@@ -158,6 +160,13 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       setDelayRandomError(false);
     }
   };
+  const handleChangeJitterRandom = (event) => {
+    const value = event.target.value.replace(/\D/g, '');
+    setJitterRandom(value);
+    if (value) {
+      setJitterRandomError(false);
+    }
+  };
 
   const handleChangeBandwidthRandom = (event) => {
     const value = event.target.value.replace(/\D/g, '');
@@ -217,6 +226,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     const customEdge = {
       bandwidth: Number(bandwidthRandom),
       delay: `${delayRandom}ms`,
+      jitter: `${jitterRandom}ms`,
     };
     const graphRandom = DeviceFactory(
       graph,
@@ -232,9 +242,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   function clearStates() {
     setChecked(false);
     setDelayRandom('');
+    setJitterRandom('');
     setBandwidthRandom('');
     setQuantity('5');
     setDelay('');
+    setJitter('');
     setBandwidth('');
     setName('');
     setDevice('');
@@ -244,9 +256,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     setIpError(false);
     setBandwidthError(false);
     setDelayError(false);
+    setJitterError(false);
     setQuantityError(false);
     setBandwidthRandomError(false);
     setDelayRandomError(false);
+    setJitterRandomError(false);
     setOpen((x) => !x);
   }
 
@@ -294,6 +308,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
 
       if (emptyField(delayRandom)) {
         setDelayRandomError(true);
+        invalid = true;
+      }
+
+      if (emptyField(jitterRandom)) {
+        setJitterRandomError(true);
         invalid = true;
       }
 
@@ -385,6 +404,18 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
           autoComplete="off"
           aria-autocomplete="none"
           error={delayRandomError}
+        />
+        <TextField
+          margin="dense"
+          id="delayRandom"
+          label="Delay(ms)"
+          type="text"
+          fullWidth
+          value={jitterRandom}
+          onChange={handleChangeJitterRandom}
+          autoComplete="off"
+          aria-autocomplete="none"
+          error={jitterRandomError}
         />
         <TextField
           margin="dense"

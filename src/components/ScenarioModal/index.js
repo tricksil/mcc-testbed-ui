@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
+const ScenarioModal = forwardRef(({ onSubmit, onClose, title }, ref) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -82,7 +82,7 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
           fullWidth
         >
           <DialogTitle id="customized-dialog-title" className={classes.title}>
-            Scenario
+            {title}
           </DialogTitle>
           <DialogContent>
             <TextField
@@ -118,6 +118,7 @@ const ScenarioModal = forwardRef(({ onSubmit, onClose }, ref) => {
 ScenarioModal.displayName = 'VncMScenarioModalodal';
 
 ScenarioModal.propTypes = {
+  title: PropTypes.string.isRequired,
   onSubmit: PropTypes.func,
   onClose: PropTypes.func.isRequired,
 };

@@ -22,6 +22,7 @@ function Home() {
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
   const [action, setAction] = useState(null);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     if (!ip) {
@@ -57,6 +58,10 @@ function Home() {
     setAction('upload');
   }
 
+  function handleSearch() {
+    searchRef.current?.open();
+  }
+
   useEffect(() => {
     if (action && action === 'upload') {
       scenarioRef.current?.open();
@@ -74,20 +79,30 @@ function Home() {
           <Styles.BoardButton
             type="button"
             onClick={() => {
+              setTitle('Build Scenario');
               handleCreateScenery();
             }}
           >
-            Build scenery
+            Build Scenario
           </Styles.BoardButton>
           <Styles.BoardButton
-            onClick={() => searchRef.current?.open()}
+            onClick={() => {
+              setTitle('Search Scenario');
+              handleSearch();
+            }}
             type="button"
           >
-            Search Scenery
+            Search Scenario
           </Styles.BoardButton>
 
-          <Styles.BoardButton type="button" onClick={handleUpload}>
-            Upload Scenery
+          <Styles.BoardButton
+            type="button"
+            onClick={() => {
+              setTitle('Upload Scenario');
+              handleUpload();
+            }}
+          >
+            Upload Scenario
             <input
               type="file"
               className="hidden"
@@ -112,6 +127,7 @@ function Home() {
           setAction(null);
         }}
         ref={scenarioRef}
+        title={title}
       />
       <SearchModal ref={searchRef} />
       <ConfigModal ref={configRef} />

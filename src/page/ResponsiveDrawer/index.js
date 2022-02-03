@@ -20,7 +20,6 @@ import Button from '@material-ui/core/Button';
 import { useContext, useState } from 'react';
 import NetWork from '../Network';
 import Data from '../Data';
-import SnackBar from '~/components/Snackbar';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 

@@ -111,7 +111,7 @@ export function DeviceFactory(
     ...customEdge,
     from: value.id,
     to: nodeConnect,
-    title: `<p>Delay: ${customEdge.delay}ms<br>Bandwidth: ${customEdge.bandwidth}</p>`,
+    title: `<p>Delay: ${customEdge.delay}ms<br><p>Jitter: ${customEdge.jitter}ms<br>Bandwidth: ${customEdge.bandwidth}</p>`,
   }));
 
   return {

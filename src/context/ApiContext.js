@@ -1,6 +1,5 @@
 import { createContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import * as axios from 'axios';
 
 export const ApiContext = createContext();
 
