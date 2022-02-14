@@ -103,7 +103,7 @@ function NetWork() {
       },
       interaction: {
         navigationButtons: true,
-        keyboard: true,
+        keyboard: false,
       },
       manipulation: {
         enabled: false,

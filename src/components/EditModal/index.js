@@ -104,6 +104,11 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       setDelay(
         !edge.delay?.includes('ms') ? edge.delay : edge.delay.replace('ms', '')
       );
+      setJitter(
+        !edge.jitter?.includes('ms')
+          ? edge.jitter
+          : edge.jitter.replace('ms', '')
+      );
     }
   }, [data, data.action, data.type, findEdge]);
 
@@ -192,9 +197,9 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       ...edge,
       label: name,
       bandwidth: Number(bandwidth),
-      delay: `${delay}ms`,
-      jitter: `${jitter}ms`,
-      title: `<p>Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}</p>`,
+      delay: `${delay}`,
+      jitter: `${jitter}`,
+      title: `Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}`,
     };
     editEdge(customEdge);
     removeData();
@@ -225,8 +230,8 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     };
     const customEdge = {
       bandwidth: Number(bandwidthRandom),
-      delay: `${delayRandom}ms`,
-      jitter: `${jitterRandom}ms`,
+      delay: `${delayRandom}`,
+      jitter: `${jitterRandom}`,
     };
     const graphRandom = DeviceFactory(
       graph,
@@ -294,7 +299,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       }
     }
 
-    if (device === switchDivice) {
+    if (device !== phone) {
       if (emptyField(deviceChecked)) {
         setDeviceCheckedError(true);
 
@@ -407,8 +412,8 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
         />
         <TextField
           margin="dense"
-          id="delayRandom"
-          label="Delay(ms)"
+          id="jitterRandom"
+          label="Jitter(ms)"
           type="text"
           fullWidth
           value={jitterRandom}

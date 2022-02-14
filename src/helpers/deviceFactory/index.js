@@ -25,11 +25,11 @@ function nameRandom(graphs, namesSelected) {
   return function (type) {
     let nameChoose = null;
     const namesGraphs = hasNames(graphs);
-    const ipsExists = [...namesGraphs, ...namesSelected];
+    const namesExists = [...namesGraphs, ...namesSelected];
 
     nameChoose = nameType(type);
 
-    while (ipsExists.includes(nameChoose)) {
+    while (namesExists.includes(nameChoose)) {
       nameChoose = nameType(type);
     }
 
@@ -96,6 +96,7 @@ export function DeviceFactory(
     const dimage = createDimage()(customNode.type);
     const ip = ipRandom(graphs, ipsSelected);
     ipsSelected.push(ip);
+    namesSelected.push(name);
     return {
       ...value,
       ...customNode,
@@ -111,7 +112,7 @@ export function DeviceFactory(
     ...customEdge,
     from: value.id,
     to: nodeConnect,
-    title: `<p>Delay: ${customEdge.delay}ms<br><p>Jitter: ${customEdge.jitter}ms<br>Bandwidth: ${customEdge.bandwidth}</p>`,
+    title: `Delay: ${customEdge.delay}ms<br>Jitter: ${customEdge.jitter}ms<br>Bandwidth: ${customEdge.bandwidth}`,
   }));
 
   return {

@@ -72,14 +72,16 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
           <DialogContent
             style={{ width: '80vh', height: '100vw', overflow: 'hidden' }}
           >
-            <Iframe
-              title="vnc"
-              src={`http://0.0.0.0:${vncPort}/vnc_auto.html`}
-              frameBorder="0"
-              width="100%"
-              height="100%"
-              onLoad={() => console.log('Carregando...')}
-            />
+            {vncPort && (
+              <Iframe
+                title="vnc"
+                src={`http://0.0.0.0:${vncPort}/vnc_auto.html`}
+                frameBorder="0"
+                width="100%"
+                height="100%"
+                onLoad={() => console.log('Carregando...')}
+              />
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">

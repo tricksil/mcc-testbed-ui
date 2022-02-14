@@ -146,9 +146,9 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       ...edge,
       label: name,
       bandwidth: Number(bandwidth),
-      delay: `${delay}ms`,
-      jitter: `${jitter}ms`,
-      title: `<p>Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}</p>`,
+      delay: `${delay}`,
+      jitter: `${jitter}`,
+      title: `Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}`,
     };
     createEdge(customEdge);
     removeData();

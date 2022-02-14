@@ -8,12 +8,13 @@ import {
 } from '~/helpers/convertionalScenery';
 
 export const GraphContext = createContext();
-
+let time;
 export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [isExecute, setExecute] = useState(false);
   const [name, onChangeName] = useState('');
   const [execApkStatus, setExecApkStatus] = useState('');
+  const [countupExecuteTime, setCountupExecuteTime] = useState(0);
 
   useEffect(() => {
     const graphSave = async () => {
@@ -141,6 +142,27 @@ export function GraphProvider({ children }) {
     }
   }, [execApkStatus]);
 
+  useEffect(() => {
+    time = setInterval(() => {
+      setCountupExecuteTime((prev) => prev + 1);
+    }, 1000);
+    if (execApkStatus !== 'EXECUTING') {
+      console.log(`${countupExecuteTime}s`);
+      setCountupExecuteTime(0);
+      clearInterval(time);
+    }
+
+    return () => clearInterval(time);
+  }, [countupExecuteTime, execApkStatus]);
+
+  const cleanGraphStates = () => {
+    onChangeName('');
+    setExecApkStatus('');
+    setCountupExecuteTime(0);
+    setExecute(false);
+    setGraph({ nodes: [], edges: [] });
+  };
+
   return (
     <GraphContext.Provider
       value={{
@@ -165,6 +187,7 @@ export function GraphProvider({ children }) {
         execApkStatus,
         setExecApkStatus,
         isDisableBecauseExecApp,
+        cleanGraphStates,
       }}
     >
       {children}

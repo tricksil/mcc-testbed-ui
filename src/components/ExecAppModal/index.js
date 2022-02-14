@@ -45,19 +45,17 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   const [appList, setAppLis] = useState([]);
   const [logTag, setLogTag] = useState('DebugRpc');
   const [mainActivity, setMainActivity] = useState(
-    'com.example.renan.kotlinmpos/.MainActivity'
+    'br.ufc.mdcc.benchimage2/.MainActivity'
   );
   const [runActivity, setRunActivity] = useState(
-    'com.example.renan.kotlinmpos/.MainActivity'
+    'br.ufc.mdcc.benchimage2/.MainActivity'
   );
-  const [extras, setExtras] = useState('--es cloudlet 10.0.0.12');
-  const [broadcastSignal, setBroadcasSignal] = useState(
-    'com.example.renan.kotlinmpos.EXTRAS'
-  );
+  const [extras, setExtras] = useState('--es cloudlet ');
+  const [broadcastSignal, setBroadcasSignal] = useState('benchimage2.EXTRAS');
   const [argumentsExec, setArgumentsExec] = useState(
-    "--es 'operation' 'mul' --ei 'size' 600"
+    '--ei size 4 --ei filter 2 --ei local 1'
   );
-  const [interactions, setInteractions] = useState('2');
+  const [interactions, setInteractions] = useState('');
   const [appNameError, setAppNameError] = useState(false);
   const [logTagError, setLogTagError] = useState(false);
   const [mainActivityError, setMainActivityError] = useState(false);
@@ -105,32 +103,32 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
 
   function handleChangeAppName(event) {
     const appNameChange = event.target.value.trim();
+    setAppName(appNameChange);
     if (appNameChange) {
-      setAppName(appNameChange);
       setAppNameError(false);
     } else setAppNameError(true);
   }
 
   function handleChangeLogTag(event) {
     const logTagChange = event.target.value.trim();
+    setLogTag(logTagChange);
     if (logTagChange) {
-      setLogTag(logTagChange);
       setLogTagError(false);
     } else setLogTagError(true);
   }
 
   function handleChangeMainActivity(event) {
     const mainActivityChange = event.target.value.trim();
+    setMainActivity(mainActivityChange);
     if (mainActivityChange) {
-      setMainActivity(mainActivityChange);
       setMainActivityError(false);
     } else setMainActivityError(true);
   }
 
   function handleChangeRunActivity(event) {
     const runActivityChange = event.target.value.trim();
+    setRunActivity(runActivityChange);
     if (runActivityChange) {
-      setRunActivity(runActivityChange);
       setRunActivityError(false);
     } else setRunActivityError(true);
   }
@@ -142,8 +140,8 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
 
   function handleChangeBroadcasSignal(event) {
     const broadcasSignalChange = event.target.value.trim();
+    setBroadcasSignal(broadcasSignalChange);
     if (broadcasSignalChange) {
-      setBroadcasSignal(broadcasSignalChange);
       setBroadcasSignalError(false);
     } else setBroadcasSignalError(true);
   }
@@ -359,7 +357,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
           <DialogActions>
             <Button
               onClick={handleClose}
-              color="secundary"
+              color="secondary"
               disabled={isDisabled}
             >
               Cancel

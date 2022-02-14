@@ -17,15 +17,9 @@ import {
   Dialog,
   Button,
 } from '@material-ui/core';
-import { v4 } from 'uuid';
 
 import axios from 'axios';
-import {
-  DialogCustom,
-  DialogTitleCustom,
-  ButtonAdd,
-  GridContent,
-} from './styles';
+import { DialogTitleCustom } from './styles';
 import { ApiContext } from '~/context/ApiContext';
 import remove from '~/assets/remove.svg';
 import AddAppModal from '../AddAppModal';
@@ -78,8 +72,7 @@ const AppAreaModal = forwardRef((props, ref) => {
     try {
       const response = await axios.get(`http://${ip}:5000/exec/logs`);
       if (response.data?.code === 200) {
-        const uuid = v4();
-        const fileName = `${uuid}_${name}_execution_logs`;
+        const fileName = `${name}`;
         const json = JSON.stringify(response.data?.execution_log);
         const blob = new Blob([json], { type: 'application/json' });
         const href = await URL.createObjectURL(blob);

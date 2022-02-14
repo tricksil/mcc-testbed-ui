@@ -35,6 +35,7 @@ function HeaderNetwork() {
     isDisableBecauseExecApp,
     setExecApkStatus,
     onChangeName,
+    cleanGraphStates,
   } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
@@ -116,8 +117,7 @@ function HeaderNetwork() {
   }
 
   function handleBack() {
-    setGraph({ nodes: [], edges: [] });
-    onChangeName('');
+    cleanGraphStates();
   }
 
   return (
