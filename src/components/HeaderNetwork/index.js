@@ -48,12 +48,6 @@ function HeaderNetwork() {
   }
 
   useEffect(() => {
-    if (isExecute) {
-      handleExecStatus();
-    }
-  }, [isExecute]);
-
-  useEffect(() => {
     let timer = null;
     if (execApkStatus !== 'EXECUTING') {
       clearInterval(timer);
@@ -103,6 +97,7 @@ function HeaderNetwork() {
       const { data } = await axios.get(`http://${ip}:5000/stop`);
       snackBarOpen(data.message, 'success');
       setExecute(false);
+      setExecApkStatus('');
       setLoading((x) => !x);
     } catch (error) {
       snackBarOpen('Erro', 'error');

@@ -299,7 +299,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       }
     }
 
-    if (device !== phone) {
+    if (device !== phone && checked) {
       if (emptyField(deviceChecked)) {
         setDeviceCheckedError(true);
 

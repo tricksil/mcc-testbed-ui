@@ -82,7 +82,6 @@ const AppAreaModal = forwardRef((props, ref) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        await axios.get(`http://${ip}:5000/exec/clean`);
       } else {
         snackBarOpen('Error. Try Again Later.', 'error');
       }

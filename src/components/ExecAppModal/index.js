@@ -102,7 +102,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }, [open]);
 
   function handleChangeAppName(event) {
-    const appNameChange = event.target.value.trim();
+    const appNameChange = event.target.value;
     setAppName(appNameChange);
     if (appNameChange) {
       setAppNameError(false);
@@ -110,7 +110,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   function handleChangeLogTag(event) {
-    const logTagChange = event.target.value.trim();
+    const logTagChange = event.target.value;
     setLogTag(logTagChange);
     if (logTagChange) {
       setLogTagError(false);
@@ -118,7 +118,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   function handleChangeMainActivity(event) {
-    const mainActivityChange = event.target.value.trim();
+    const mainActivityChange = event.target.value;
     setMainActivity(mainActivityChange);
     if (mainActivityChange) {
       setMainActivityError(false);
@@ -126,7 +126,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   function handleChangeRunActivity(event) {
-    const runActivityChange = event.target.value.trim();
+    const runActivityChange = event.target.value;
     setRunActivity(runActivityChange);
     if (runActivityChange) {
       setRunActivityError(false);
@@ -134,12 +134,12 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   function handleChangeExtras(event) {
-    const extrasChange = event.target.value.trim();
+    const extrasChange = event.target.value;
     setExtras(extrasChange);
   }
 
   function handleChangeBroadcasSignal(event) {
-    const broadcasSignalChange = event.target.value.trim();
+    const broadcasSignalChange = event.target.value;
     setBroadcasSignal(broadcasSignalChange);
     if (broadcasSignalChange) {
       setBroadcasSignalError(false);
@@ -147,7 +147,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   }
 
   function handleChangeArgumentsExec(event) {
-    const argumentsExecChange = event.target.value.trim();
+    const argumentsExecChange = event.target.value;
     setArgumentsExec(argumentsExecChange);
   }
 
@@ -194,15 +194,15 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
     try {
       const data = {
         app_name: appName,
-        log_tag: logTag,
-        main_activity: mainActivity,
-        run_activity: runActivity,
-        extras,
-        broadcast_signal: broadcastSignal,
-        arguments: argumentsExec,
+        log_tag: logTag.trim(),
+        main_activity: mainActivity.trim(),
+        run_activity: runActivity.trim(),
+        extras: extras.trim(),
+        broadcast_signal: broadcastSignal.trim(),
+        arguments: argumentsExec.trim(),
         interactions: Number(interactions),
       };
-      console.log(data);
+      await axios.get(`http://${ip}:5000/exec/clean`);
       const response = await axios.post(`http://${ip}:5000/exec`, data);
       await execStatus(ip, setExecApkStatus);
       console.log(response);
