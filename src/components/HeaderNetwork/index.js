@@ -30,11 +30,9 @@ function HeaderNetwork() {
     convertionalScenery,
     isExecute,
     setExecute,
-    setGraph,
     execApkStatus,
     isDisableBecauseExecApp,
     setExecApkStatus,
-    onChangeName,
     cleanGraphStates,
   } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
@@ -142,20 +140,23 @@ function HeaderNetwork() {
 
             {isExecute ? 'Stop' : 'Execute'}
           </Button>
-          {!isExecute && (
-            <Button type="button" onClick={handleSaveScenario}>
-              <IconContent>
-                <img src={save} alt="Save" />
-              </IconContent>
-              Save
-            </Button>
-          )}
+          <Button type="button" onClick={handleSaveScenario}>
+            <IconContent>
+              <img src={save} alt="Save" />
+            </IconContent>
+            Save
+          </Button>
           {isExecute && (
-            <Button type="button" onClick={handleAppArea} disabled={false}>
+            <Button
+              type="button"
+              onClick={handleAppArea}
+              disabled={isDisableBecauseExecApp}
+            >
               <IconContent>
                 <img src={app} alt="App Area" />
               </IconContent>
               App Area
+              {isDisableBecauseExecApp && <span className="loading" />}
             </Button>
           )}
         </aside>

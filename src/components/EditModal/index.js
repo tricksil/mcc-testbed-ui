@@ -27,7 +27,7 @@ import {
 
 import phone from '~/assets/phone.svg';
 import server from '~/assets/server.svg';
-import switchDivice from '~/assets/switch.svg';
+import switchDevice from '~/assets/switch.svg';
 import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
 import { emptyField, ipIncomplete } from '~/validation';
@@ -56,7 +56,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [bandwidth, setBandwidth] = useState('');
   const [delay, setDelay] = useState('');
   const [jitter, setJitter] = useState('');
-  const [quantity, setQuantity] = useState('5');
+  const [quantity, setQuantity] = useState('');
   const [bandwidthRandom, setBandwidthRandom] = useState('');
   const [jitterRandom, setJitterRandom] = useState('');
   const [delayRandom, setDelayRandom] = useState('');
@@ -211,7 +211,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       label: name,
       title: `Name: ${name}`,
     };
-    if (device !== switchDivice) {
+    if (device !== switchDevice) {
       customNode.ip = ip;
       customNode.title = `${customNode.title}<br>IP: ${ip}`;
       setIp('');
@@ -249,7 +249,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     setDelayRandom('');
     setJitterRandom('');
     setBandwidthRandom('');
-    setQuantity('5');
+    setQuantity('');
     setDelay('');
     setJitter('');
     setBandwidth('');
@@ -283,7 +283,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
 
   function validationNode() {
     let invalid = false;
-    if (device !== switchDivice) {
+    if (device !== switchDevice) {
       if (emptyField(name)) {
         setNameError(true);
         invalid = true;
@@ -393,6 +393,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
             fullWidth
             error={deviceCheckedError}
           >
+            <MenuItem value={switchDevice}>Switch</MenuItem>
             <MenuItem value={phone}>Smartphone</MenuItem>
             <MenuItem value={server}>Server</MenuItem>
           </Select>
@@ -479,12 +480,12 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
             disabled
           >
             <MenuItem value={phone}>Smartphone</MenuItem>
-            <MenuItem value={switchDivice}>Switch</MenuItem>
+            <MenuItem value={switchDevice}>Switch</MenuItem>
             <MenuItem value={server}>Server</MenuItem>
           </Select>
         </FormControl>
 
-        {device && device !== switchDivice && renderNodeOptions()}
+        {device && device !== switchDevice && renderNodeOptions()}
 
         {data.dataNode.type !== 'client' && (
           <FormGroup>

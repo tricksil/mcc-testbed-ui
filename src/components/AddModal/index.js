@@ -161,7 +161,9 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       ...node,
       id: nodeIndex,
       label: typeChoose !== 'switch' ? name : nodeIndex,
-      title: `Name: ${typeChoose !== 'switch' ? name : nodeIndex}`,
+      title: `Type: ${
+        typeChoose.charAt(0).toUpperCase() + typeChoose.slice(1)
+      }<br>Name: ${typeChoose !== 'switch' ? name : nodeIndex}`,
       shape: 'image',
       image: device,
       size: 15,

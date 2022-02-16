@@ -17,20 +17,22 @@ function hasNames(graphs) {
     ?.map((node) => node.label);
 }
 
-function nameType(type) {
-  return type === 'client' ? faker.name.firstName() : faker.random.word();
-}
+const nameType = {
+  client: () => faker.name.firstName(),
+  switch: () => faker.company.companyName(),
+  server: () => faker.random.word(),
+};
 
 function nameRandom(graphs, namesSelected) {
   return function (type) {
+    console.log(graphs, namesSelected, type);
     let nameChoose = null;
     const namesGraphs = hasNames(graphs);
     const namesExists = [...namesGraphs, ...namesSelected];
 
-    nameChoose = nameType(type);
-
+    nameChoose = nameType[type]();
     while (namesExists.includes(nameChoose)) {
-      nameChoose = nameType(type);
+      nameChoose = nameType[type]();
     }
 
     return nameChoose;
@@ -49,6 +51,7 @@ export function createDimage() {
     if (type === 'client') {
       return `renanalves/android-22`;
     }
+    if (type === 'switch') return '';
     return `renanalves/server-testbed`;
   };
 }
@@ -92,20 +95,33 @@ export function DeviceFactory(
   const ipsSelected = [];
   const namesSelected = [];
   const nodes = new Array(quantity).fill().map((value) => {
-    const name = createName(graphs, namesSelected)(customNode.type);
-    const dimage = createDimage()(customNode.type);
-    const ip = ipRandom(graphs, ipsSelected);
-    ipsSelected.push(ip);
-    namesSelected.push(name);
-    return {
+    const id = v4().split('-')[0];
+    const createNode = {
       ...value,
       ...customNode,
-      id: v4().split('-')[0],
-      label: name,
-      dimage,
-      ip,
-      title: `Name: ${name}<br>Ip: ${ip}<br>Image: ${dimage}`,
+      id,
     };
+    if (customNode.type !== 'switch') {
+      const name = createName(graphs, namesSelected)(customNode.type);
+      const dimage = createDimage()(customNode.type);
+      const ip = ipRandom(graphs, ipsSelected);
+      const title = `Type: ${
+        customNode.type === 'client' ? 'Cliente' : 'Server'
+      }<br>Name: ${name}<br>${customNode.title}<br>IP: ${ip}<br>Image: ${
+        customNode.dimage
+      }`;
+      createNode.label = name;
+      createNode.dimage = dimage;
+      createNode.ip = ip;
+      createNode.title = title;
+      ipsSelected.push(ip);
+      namesSelected.push(name);
+    } else {
+      createNode.label = id;
+      createNode.title = `Type: Switch<br>Name: ${id}`;
+    }
+
+    return createNode;
   });
 
   const edges = nodes.map((value) => ({

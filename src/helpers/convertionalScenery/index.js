@@ -20,8 +20,8 @@ export function convertionalToTestbed(graphs) {
   const links = graphs.edges?.map((edge) => ({
     from: edge.from,
     to: edge.to,
-    delay: edge.delay,
-    jitter: edge.jitter,
+    delay: `${edge.delay}ms`,
+    jitter: `${edge.jitter}ms`,
     bw: edge.bandwidth,
   }));
 
@@ -67,8 +67,8 @@ export function convertionalToVis(testbed) {
     edges = LINKS.map((link) => ({
       from: link.from,
       to: link.to,
-      delay: link.delay,
-      jitter: link.jitter,
+      delay: link.delay.replace(/\D/g, ''),
+      jitter: link.jitter.replace(/\D/g, ''),
       bandwidth: link.bw,
       title: `Delay: ${link.delay}ms<br>Jitter: ${link.jitter}ms<br>Bandwidth: ${link.bw}`,
     }));

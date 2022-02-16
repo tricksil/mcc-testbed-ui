@@ -59,6 +59,24 @@ const load = keyframes`
   }
 `;
 
+const buttomLoading = keyframes`
+  0%{
+    width: 0%;
+  }
+  25%{
+      width: 25%;
+  }
+  50%{
+      width: 50%;
+  }
+  75%{
+      width: 75%;
+  }
+  100%{
+      width: 100%;
+  }
+`;
+
 export const ActionContent = styled.div`
   position: relative;
   padding: 10px;
@@ -95,17 +113,29 @@ export const Action = styled.span`
 `;
 
 export const Button = styled.button`
+  position: relative;
   display: flex;
   align-items: center;
   min-width: 100px;
-  border: 2px solid #fff;
-  border-radius: 8px;
+  border: 0;
+  /* border-bottom: 3px solid #3ddd85; */
+  /* border-radius: 8px; */
   background: #fff;
   padding: 4px 8px;
   color: #222222;
   font-weight: bold;
   margin-right: 5px;
   cursor: pointer;
+
+  .loading {
+    background: #3ddd85;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    animation: ${buttomLoading} 4s infinite;
+  }
 
   &:hover {
     background: #eaecef;
