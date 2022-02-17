@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import faker from 'faker';
 import PropTypes from 'prop-types';
 
-const symbolsArray = ["'", '"', '.', ' ', ','];
+const symbolsArray = ["'", '"', '.', ' ', ',', '-'];
 
 export function removeSymbols(symbols) {
   return function (text) {

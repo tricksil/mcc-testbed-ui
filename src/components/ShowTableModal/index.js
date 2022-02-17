@@ -119,8 +119,8 @@ const ShowTableModal = forwardRef((props, ref) => {
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
-              <Typography variant="h4" className={classes.title}>
-                Results Tests
+              <Typography variant="h5" className={classes.title}>
+                Test Result
               </Typography>
               <Button autoFocus color="inherit" onClick={handleDownloadLogs}>
                 Download Logs

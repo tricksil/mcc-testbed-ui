@@ -72,7 +72,7 @@ function Home() {
     <Styles.Container>
       <Styles.ContentImage>
         <Styles.ImageCloud src={cloud} alt="Cloud" />
-        <h1>MCC Network</h1>
+        <h1>MCC Testbed</h1>
       </Styles.ContentImage>
       <Styles.ContentOptions>
         <Styles.BoardOptions>

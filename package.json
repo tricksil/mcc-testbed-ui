@@ -1,6 +1,6 @@
 {
   "name": "mcc-testbed",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "author": "Patrick Silva <patrickeeep12@gmail.com>",
   "dependencies": {
@@ -41,7 +41,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && GH_TOKEN=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 electron-builder -c.extraMetadata.main=build/main.js --publish always",
+    "electron:build": "yarn build && GH_TOKEN= electron-builder -c.extraMetadata.main=build/main.js --publish always",
     "electron:start": "wait-on http://localhost:3000 && electron ."
   },
   "build": {
@@ -55,7 +55,8 @@
     },
     "linux": {
       "target": [
-        "deb"
+        "deb",
+        "snap"
       ],
       "category": "Development"
     },
@@ -100,7 +101,7 @@
     "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
     "customize-cra": "^1.0.0",
-    "electron": "^13.0.1",
+    "electron": "^17.0.1",
     "electron-builder": "^22.11.7",
     "eslint": "^7.20.0",
     "eslint-config-airbnb": "^18.2.1",
