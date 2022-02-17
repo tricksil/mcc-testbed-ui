@@ -33,7 +33,6 @@ function createWindow() {
         slashes: true,
       });
   mainWindow.loadURL(loadUrl);
-  mainWindow.webContents.session.clearStorageData();
   if (isDev) {
     mainWindow.webContents.openDevTools();
   }

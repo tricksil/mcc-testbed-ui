@@ -1,6 +1,6 @@
 {
   "name": "mcc-testbed",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": false,
   "author": "Patrick Silva <patrickeeep12@gmail.com>",
   "dependencies": {
@@ -41,7 +41,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && GH_TOKEN= electron-builder -c.extraMetadata.main=build/main.js --publish always",
+    "electron:build": "yarn build && GH_TOKEN=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 electron-builder -c.extraMetadata.main=build/main.js --publish always",
     "electron:start": "wait-on http://localhost:3000 && electron ."
   },
   "build": {
@@ -55,9 +55,9 @@
     },
     "linux": {
       "target": [
-        "deb",
         "snap"
       ],
+      "grade": "stable",
       "category": "Development"
     },
     "files": [
