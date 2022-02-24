@@ -25,7 +25,6 @@ const nameType = {
 
 function nameRandom(graphs, namesSelected) {
   return function (type) {
-    console.log(graphs, namesSelected, type);
     let nameChoose = null;
     const namesGraphs = hasNames(graphs);
     const namesExists = [...namesGraphs, ...namesSelected];

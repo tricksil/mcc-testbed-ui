@@ -90,9 +90,8 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
       if (response.data.code === 200) {
         setAppLis(response.data.apks);
       }
-    } catch (err) {
-      console.log(err);
-    }
+      // eslint-disable-next-line no-empty
+    } catch (err) {}
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -205,10 +204,8 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
       await axios.get(`http://${ip}:5000/exec/clean`);
       const response = await axios.post(`http://${ip}:5000/exec`, data);
       await execStatus(ip, setExecApkStatus);
-      console.log(response);
       snackBarOpen('Successful Exec Apk.', 'success');
     } catch (err) {
-      console.log(err);
       snackBarOpen('Error. Try Again Later.', 'error');
     } finally {
       setDisabled(false);

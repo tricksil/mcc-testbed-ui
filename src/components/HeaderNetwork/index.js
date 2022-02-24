@@ -24,6 +24,7 @@ import ScenarioConfigModal from '../ScenarioConfigModal';
 import AppAreaModal from '../AppAreaModal';
 import { execStatus } from '~/services/execApp';
 
+let timer = null;
 function HeaderNetwork() {
   const {
     graph,
@@ -46,7 +47,6 @@ function HeaderNetwork() {
   }
 
   useEffect(() => {
-    let timer = null;
     if (execApkStatus !== 'EXECUTING') {
       clearInterval(timer);
     }
@@ -56,7 +56,6 @@ function HeaderNetwork() {
       }, 10000);
     }
     return () => {
-      console.log('clean interval');
       clearInterval(timer);
     };
   }, [execApkStatus]);

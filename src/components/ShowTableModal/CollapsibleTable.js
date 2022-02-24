@@ -28,7 +28,6 @@ function Row(props) {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    console.log(event.target.value);
     setRowsPerPage(+event.target.value);
     setPage(0);
   };

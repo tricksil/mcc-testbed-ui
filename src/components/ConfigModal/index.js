@@ -61,7 +61,6 @@ const ConfigModal = forwardRef((props, ref) => {
   function handleChangeIp(event) {
     setIp(event.target.value);
   }
-  console.log(ip);
   async function promiseOptions() {
     setLoading(true);
     setConnected(false);
@@ -74,7 +73,6 @@ const ConfigModal = forwardRef((props, ref) => {
         setError(true);
       }
     } catch (er) {
-      console.log(er);
       setConnected(false);
       setError(true);
     } finally {

@@ -100,7 +100,6 @@ const AddAppModal = forwardRef((props, ref) => {
       });
       snackBarOpen('Successful Adding Apk.', 'success');
     } catch (err) {
-      console.log(err);
       snackBarOpen('Error. Try Again Later.', 'error');
     }
   }

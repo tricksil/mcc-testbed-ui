@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import { useEffect } from 'react';
 import { HashRouter } from 'react-router-dom';
-import isElectron from 'is-electron';
 import GlobalStyles from '~/styles/global';
 import { GraphProvider } from '~/context/GraphContext';
 import { SnackbarProvider } from '~/context/SnackContext';

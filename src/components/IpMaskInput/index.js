@@ -99,7 +99,6 @@ const IpMaskInput = ({
       return;
     }
     const valid = validationIpValue(field1, field2, field3, field4);
-    console.log('valid', valid);
     setError(valid);
   }, [
     field1,
@@ -149,8 +148,6 @@ const IpMaskInput = ({
     if (event.key === 'Enter' && field4)
       setFinalValue(`${field4}.${field4}.${field4}.${field4}`);
   };
-
-  console.log(error);
 
   return (
     <Container>

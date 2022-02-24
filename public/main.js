@@ -2,7 +2,7 @@
 const electron = require('electron');
 
 const { app } = electron;
-const { BrowserWindow } = electron;
+const { BrowserWindow, ipcMain } = electron;
 const path = require('path');
 const url = require('url');
 const isDev = require('electron-is-dev');
@@ -10,12 +10,21 @@ const os = require('os-utils');
 
 let mainWindow;
 
+const isOpenDevTools = (webContents) => {
+  if (webContents.isDevToolsOpened()) {
+    webContents.closeDevTools();
+    return false;
+  }
+  webContents.openDevTools();
+  return true;
+};
 function createWindow() {
   mainWindow = new BrowserWindow({
     webPreferences: {
       sandbox: true,
-      nodeIntegration: true,
-      enableRemoteModule: true,
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
       preload: path.resolve(__dirname, 'preload.js'),
       webSecurity: false,
       allowRunningInsecureContent: true,
@@ -33,27 +42,21 @@ function createWindow() {
         slashes: true,
       });
   mainWindow.loadURL(loadUrl);
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
   mainWindow.maximize();
-  mainWindow.removeMenu();
-  setInterval(() => {
-    os.cpuUsage((v) => {
-      // app.
-      const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      mainWindow.webContents.send('appMetrics', app.getAppMetrics());
-      mainWindow.webContents.send('node', `${Math.round(used * 100) / 100} -`);
-      mainWindow.webContents.send('cpu', v * 100);
-      mainWindow.webContents.send('mem', os.freemem());
-      mainWindow.webContents.send('total-mem', os.totalmem());
-    });
-  }, 1000);
+  mainWindow.setMenu(null);
+  // os.cpuUsage((v) => {
+  //   // app.
+  //   const used = process.memoryUsage().heapUsed / 1024 / 1024;
+  //   mainWindow.webContents.send('appMetrics', app.getAppMetrics());
+  //   mainWindow.webContents.send('node', `${Math.round(used * 100) / 100} -`);
+  //   mainWindow.webContents.send('cpu', v * 100);
+  //   mainWindow.webContents.send('mem', os.freemem());
+  //   mainWindow.webContents.send('total-mem', os.totalmem());
+  // });
 }
 
 app.on('ready', createWindow);
@@ -68,4 +71,10 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+ipcMain.on('openDevTools', (event, args) => {
+  // Do something with file contents
+  isOpenDevTools(mainWindow.webContents);
+  // Send result back to renderer process
 });

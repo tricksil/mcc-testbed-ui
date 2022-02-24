@@ -209,7 +209,7 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       setNameError(true);
       invalid = true;
     }
-    console.log('ip', ipIncomplete(ip));
+
     if (emptyField(ip) || ipExistInNode(ip, graph) || ipIncomplete(ip)) {
       setIpError(true);
       invalid = true;

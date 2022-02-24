@@ -42,10 +42,9 @@ function NetWork() {
   async function handleStopScenery() {
     setExecute(false);
     try {
-      const { data } = await axios.get(`http://${ip}:5000/stop`);
-    } catch (error) {
-      console.log(error);
-    }
+      await axios.get(`http://${ip}:5000/stop`);
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
   }
 
   useEffect(() => {
@@ -159,7 +158,6 @@ function NetWork() {
         }
         return true;
       } catch (error) {
-        console.log(error);
         snackBarOpen('Find Node Error', 'error');
         return false;
       }

@@ -23,6 +23,7 @@ function Home() {
   const { ip } = useContext(ApiContext);
   const [action, setAction] = useState(null);
   const [title, setTitle] = useState('');
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!ip) {
@@ -68,10 +69,20 @@ function Home() {
     }
   }, [action]);
 
+  useEffect(() => {
+    if (count === 10) {
+      window.electron.send('openDevTools', '');
+      setCount(0);
+    }
+  }, [count]);
   return (
     <Styles.Container>
       <Styles.ContentImage>
-        <Styles.ImageCloud src={cloud} alt="Cloud" />
+        <Styles.ImageCloud
+          src={cloud}
+          alt="Cloud"
+          onClick={() => setCount((x) => x + 1)}
+        />
         <h1>MCC Testbed</h1>
       </Styles.ContentImage>
       <Styles.ContentOptions>

@@ -49,9 +49,8 @@ const SearchModal = forwardRef((props, ref) => {
     try {
       const response = await axios.get(`http://${ip}:5000/scenarios/list`);
       setScenarios(response.data.scenarios);
-    } catch (error) {
-      console.log(error);
-    }
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
   }, [ip]);
 
   useEffect(() => {

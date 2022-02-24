@@ -5,11 +5,9 @@ async function execStatus(ip, setExecApkStatus) {
     const { data } = await axios.get(`http://${ip}:5000/exec/status`);
     if (data.code === 200) {
       setExecApkStatus(data.message);
-      console.log(data);
     }
-  } catch (error) {
-    console.log(error);
-  }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 }
 
 export { execStatus };
