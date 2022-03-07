@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const electron = require('electron');
 
-const { app } = electron;
+const { app, Menu } = electron;
 const { BrowserWindow, ipcMain } = electron;
 const path = require('path');
 const url = require('url');
@@ -32,17 +32,21 @@ function createWindow() {
       allowRunningInsecureContent: true,
     },
     simpleFullscreen: true,
-    icon: `${__dirname}/logo.png`,
+    icon: `${__dirname}/icon.png`,
     title: 'MCC Testbed',
   });
+
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(`${__dirname}/icon512x512.png`);
+  }
 
   const loadUrl = isDev
     ? 'http://localhost:3000'
     : url.format({
-        pathname: path.join(__dirname, '/../build/index.html'),
-        protocol: 'file:',
-        slashes: true,
-      });
+      pathname: path.join(__dirname, '/../build/index.html'),
+      protocol: 'file:',
+      slashes: true,
+    });
   mainWindow.loadURL(loadUrl);
 
   mainWindow.on('closed', () => {

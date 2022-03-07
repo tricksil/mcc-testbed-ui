@@ -57,7 +57,7 @@
     "mac": {
       "target": "dmg",
       "category": "Development",
-      "icon": "resources/icon.png"
+      "icon": "resources/icon512x512.png"
     },
     "linux": {
       "target": [
