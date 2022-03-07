@@ -58,12 +58,12 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>execution number</TableCell>
-                    <TableCell>executionCpuTime</TableCell>
-                    <TableCell align="right">uploadTime</TableCell>
-                    <TableCell align="right">donwloadTime</TableCell>
-                    <TableCell align="right">uploadSize</TableCell>
-                    <TableCell align="right">downloadSize</TableCell>
+                    <TableCell>Execution number</TableCell>
+                    <TableCell>Execution Cpu Time</TableCell>
+                    <TableCell align="right">Upload Time</TableCell>
+                    <TableCell align="right">Donwload Time</TableCell>
+                    <TableCell align="right">Upload Size</TableCell>
+                    <TableCell align="right">Download Size</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

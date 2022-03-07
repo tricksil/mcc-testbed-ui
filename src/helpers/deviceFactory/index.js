@@ -21,6 +21,7 @@ const nameType = {
   client: () => faker.name.firstName(),
   switch: () => faker.company.companyName(),
   server: () => faker.random.word(),
+  'load-balance': () => faker.random.word(),
 };
 
 function nameRandom(graphs, namesSelected) {
@@ -45,14 +46,14 @@ function createName(graphs, namesSelected) {
   };
 }
 
-export function createDimage() {
-  return function (type) {
-    if (type === 'client') {
-      return `renanalves/android-22`;
-    }
-    if (type === 'switch') return '';
-    return `renanalves/server-testbed`;
-  };
+const DImage = {
+  client: `renanalves/android-22`,
+  server: `renanalves/server-testbed`,
+  'load-balance': 'renanalves/nginx-lb',
+};
+
+export function createDimage(type) {
+  return DImage[type] || '';
 }
 
 function hasIps(graphs) {
@@ -84,6 +85,14 @@ export function nameExist(name, graphs) {
   const namesGraphs = hasNames(graphs);
   return namesGraphs?.includes(name);
 }
+
+export const typeTitle = {
+  client: 'Client',
+  switch: 'Switch',
+  server: 'Server',
+  'load-balance': 'Load Balance',
+};
+
 export function DeviceFactory(
   graphs,
   nodeConnect,
@@ -102,13 +111,11 @@ export function DeviceFactory(
     };
     if (customNode.type !== 'switch') {
       const name = createName(graphs, namesSelected)(customNode.type);
-      const dimage = createDimage()(customNode.type);
+      const dimage = createDimage(customNode.type);
       const ip = ipRandom(graphs, ipsSelected);
-      const title = `Type: ${
-        customNode.type === 'client' ? 'Cliente' : 'Server'
-      }<br>Name: ${name}<br>${customNode.title}<br>IP: ${ip}<br>Image: ${
-        customNode.dimage
-      }`;
+      const title = `Type: ${typeTitle[customNode.type]}<br>Name: ${name}<br>${
+        customNode.title
+      }<br>IP: ${ip}<br>Image: ${customNode.dimage}`;
       createNode.label = name;
       createNode.dimage = dimage;
       createNode.ip = ip;

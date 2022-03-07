@@ -8,6 +8,8 @@ const url = require('url');
 const isDev = require('electron-is-dev');
 const os = require('os-utils');
 
+app.disableHardwareAcceleration();
+
 let mainWindow;
 
 const isOpenDevTools = (webContents) => {

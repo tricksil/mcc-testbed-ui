@@ -25,6 +25,7 @@ import {
 
 import phone from '~/assets/phone.svg';
 import server from '~/assets/server.svg';
+import loadBalance from '~/assets/load_balance.svg';
 import switchDivice from '~/assets/switch.svg';
 import { createDimage } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
@@ -35,6 +36,7 @@ import {
   nameExistInNode,
 } from '~/validation';
 import IpMaskInput from '../IpMaskInput';
+import { chooseTypeDevice } from '~/helpers/convertionalScenery';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -130,17 +132,6 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
     }
   };
 
-  function chooseTypeDevice(typeParam) {
-    switch (typeParam) {
-      case phone:
-        return 'client';
-      case server:
-        return 'server';
-      default:
-        return 'switch';
-    }
-  }
-
   function saveEdge(edge) {
     const customEdge = {
       ...edge,
@@ -175,7 +166,7 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
       setIp('');
     }
     if (typeChoose !== 'switch') {
-      customNode.dimage = createDimage(name)(typeChoose);
+      customNode.dimage = createDimage(typeChoose);
       customNode.title = `${customNode.title}<br>Image: ${customNode.dimage}`;
     }
     createNode(customNode);
@@ -273,6 +264,7 @@ const AddModal = forwardRef(({ data, removeData }, ref) => {
             <MenuItem value={phone}>Smartphone</MenuItem>
             <MenuItem value={switchDivice}>Switch</MenuItem>
             <MenuItem value={server}>Server</MenuItem>
+            <MenuItem value={loadBalance}>Load Balance</MenuItem>
           </Select>
         </FormControl>
 

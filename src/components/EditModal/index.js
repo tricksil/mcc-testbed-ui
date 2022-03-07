@@ -22,16 +22,17 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Divider,
 } from '@material-ui/core';
 
 import phone from '~/assets/phone.svg';
 import server from '~/assets/server.svg';
+import loadBalance from '~/assets/load_balance.svg';
 import switchDevice from '~/assets/switch.svg';
 import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
 import { emptyField, ipIncomplete } from '~/validation';
 import IpMaskInput from '../IpMaskInput';
+import { chooseTypeDevice } from '~/helpers/convertionalScenery';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -181,17 +182,6 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     }
   };
 
-  function chooseTypeDevice(typeParam) {
-    switch (typeParam) {
-      case phone:
-        return 'client';
-      case server:
-        return 'server';
-      default:
-        return 'switch';
-    }
-  }
-
   function editEdgeGraph(edge) {
     const customEdge = {
       ...edge,
@@ -214,6 +204,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     if (device !== switchDevice) {
       customNode.ip = ip;
       customNode.title = `${customNode.title}<br>IP: ${ip}`;
+      customNode.title = `${customNode.title}<br>Image: ${customNode.dimage}`;
       setIp('');
     }
     editNode(customNode);

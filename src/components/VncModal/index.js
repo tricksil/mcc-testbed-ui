@@ -7,6 +7,8 @@ import {
   useImperativeHandle,
   useMemo,
   useContext,
+  useEffect,
+  useCallback,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -16,9 +18,12 @@ import {
   DialogContent,
   DialogTitle,
 } from '@material-ui/core';
+import { v4 } from 'uuid';
 
+import axios from 'axios';
 import { Iframe } from './styles';
 import { GraphContext } from '~/context/GraphContext';
+import { ApiContext } from '~/context/ApiContext';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -34,6 +39,9 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const { findNode } = useContext(GraphContext);
+  const { ip } = useContext(ApiContext);
+  const [louded, setLouded] = useState(`${v4()}`);
+  const [count, setCount] = useState(`${v4()}`);
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -50,12 +58,38 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
 
   const handleClose = () => {
     removeData();
+    setCount(`${v4()}`);
+    setLouded(`${v4()}`);
     setOpen((x) => !x);
   };
 
   function clearStates() {
     setOpen((x) => !x);
   }
+
+  const getIframe = useCallback(async (ipApi, vncPortApi) => {
+    try {
+      const response = await axios.get(
+        `http://${ipApi}:${vncPortApi}/vnc_auto.html`
+      );
+      if (response.status === 200 && response.data) {
+        setCount(`${v4()}`);
+        setLouded('');
+      }
+    } catch (error) {
+      setLouded(`${v4()}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(louded);
+    if (ip && vncPort && louded) getIframe(ip, vncPort);
+  }, [getIframe, ip, vncPort, louded]);
+
+  const srcMemo = useMemo(() => `http://${ip}:${vncPort}/vnc_auto.html`, [
+    ip,
+    vncPort,
+  ]);
 
   return (
     <>
@@ -72,15 +106,14 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
           <DialogContent
             style={{ width: '80vh', height: '100vw', overflow: 'hidden' }}
           >
-            {vncPort && (
-              <Iframe
-                title="vnc"
-                src={`http://0.0.0.0:${vncPort}/vnc_auto.html`}
-                frameBorder="0"
-                width="100%"
-                height="100%"
-              />
-            )}
+            <Iframe
+              key={count}
+              title="vnc"
+              src={srcMemo}
+              frameBorder="0"
+              width="100%"
+              height="100%"
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">

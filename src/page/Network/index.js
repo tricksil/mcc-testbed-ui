@@ -303,6 +303,7 @@ function NetWork() {
         vncPort={vncPort}
         removeData={() => {
           network?.disableEditMode();
+          setVncPort('');
           setObjectActions({});
           setNodeSelection({});
         }}
