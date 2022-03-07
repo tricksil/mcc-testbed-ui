@@ -68,6 +68,8 @@ const ConfigModal = forwardRef((props, ref) => {
     try {
       const response = await axios.get(`http://${ip}:5000/status`);
       if (response.data.code === 200) {
+        await axios.get(`http://${ip}:5000/exec/clean`);
+        await axios.get(`http://${ip}:5000/stop`);
         setConnected(true);
       } else {
         setError(true);
