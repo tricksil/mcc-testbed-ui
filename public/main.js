@@ -32,7 +32,7 @@ function createWindow() {
       allowRunningInsecureContent: true,
     },
     simpleFullscreen: true,
-    icon: `${__dirname}/icon.png`,
+    icon: `${__dirname}/icon512x512.png`,
     title: 'MCC Testbed',
   });
 
