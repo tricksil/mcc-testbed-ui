@@ -9,7 +9,7 @@ import React, {
 
 import { Container, IpContent, Input, Error } from './styles';
 import { GraphContext } from '~/context/GraphContext';
-import { ipExist } from '~/helpers/deviceFactory';
+import { ipExist } from '~/utils/helpers/deviceFactory';
 
 const IpMaskInput = ({
   onChange,

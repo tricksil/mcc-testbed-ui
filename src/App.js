@@ -1,8 +1,7 @@
-/* eslint-disable no-undef */
-import { useEffect } from 'react';
 import { HashRouter } from 'react-router-dom';
 import GlobalStyles from '~/styles/global';
 import { GraphProvider } from '~/context/GraphContext';
+import { ScenarioProvider } from '~/context/ScenarioContext';
 import { SnackbarProvider } from '~/context/SnackContext';
 import { ApiProvider } from '~/context/ApiContext';
 import Routes from './routes';
@@ -27,14 +26,16 @@ function App() {
   // }, []);
   return (
     <ApiProvider>
-      <GraphProvider>
-        <SnackbarProvider>
-          <HashRouter>
-            <Routes />
-          </HashRouter>
-          <GlobalStyles />
-        </SnackbarProvider>
-      </GraphProvider>
+      <ScenarioProvider>
+        <GraphProvider>
+          <SnackbarProvider>
+            <HashRouter>
+              <Routes />
+            </HashRouter>
+            <GlobalStyles />
+          </SnackbarProvider>
+        </GraphProvider>
+      </ScenarioProvider>
     </ApiProvider>
   );
 }

@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useContext, useCallback } from 'react';
-import VisNetworkReactComponent from 'vis-network-react';
-
+import VisNetwork from 'vis-network-react';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+
+import scenarioApi from '~/services/scenario';
+import vncApi from '~/services/vnc';
 import AddModal from '~/components/AddModal';
 import EditModal from '~/components/EditModal';
 import { Button } from '~/components/Button';
@@ -17,6 +18,7 @@ import addImage from '~/assets/add.svg';
 import removeImage from '~/assets/remove.svg';
 import { SnackbarContext } from '~/context/SnackContext';
 import { ApiContext } from '~/context/ApiContext';
+import { ScenarioContext } from '~/context/ScenarioContext';
 
 function NetWork() {
   const [network, setNetwork] = useState(null);
@@ -26,23 +28,19 @@ function NetWork() {
   const editModalRef = useRef();
   const deleteModalRef = useRef();
   const vncModalRef = useRef();
-  const {
-    graph,
-    isExecute,
-    isSmartphone,
-    setGraph,
-    findNode,
-    setExecute,
-  } = useContext(GraphContext);
+  const { graph, isSmartphone, setGraph, findNode } = useContext(GraphContext);
+  const { isExecute, setExecute } = useContext(ScenarioContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const history = useHistory();
   const [vncPort, setVncPort] = useState('');
   const { ip } = useContext(ApiContext);
+  const [isAddEdge, setAddEdge] = useState(false);
+  const [isAddNode, setAddNode] = useState(false);
 
   async function handleStopScenery() {
     setExecute(false);
     try {
-      await axios.get(`http://${ip}:5000/stop`);
+      await scenarioApi.stopScenario(ip);
       // eslint-disable-next-line no-empty
     } catch (error) {}
   }
@@ -83,6 +81,15 @@ function NetWork() {
     }
     if (params.nodes && params.nodes.length > 0) {
       setNodeSelection(params);
+      return;
+    }
+
+    setAddNode(true);
+  };
+
+  const handleEditEdge = (params) => {
+    if (params.nodes && params.nodes.length > 0) {
+      setAddEdge(true);
     }
   };
 
@@ -90,6 +97,9 @@ function NetWork() {
     events: {
       doubleClick(params) {
         handleDoubleClick(params);
+      },
+      hold(params) {
+        handleEditEdge(params);
       },
     },
     options: {
@@ -148,9 +158,7 @@ function NetWork() {
     async (node) => {
       try {
         const containerName = findNode(node);
-        const response = await axios.get(
-          `http://${ip}:5000/vnc/${containerName.label}`
-        );
+        const response = await vncApi.getVncPort(ip, containerName.label);
 
         if (response.data.message !== null) {
           setVncPort(response.data.message);
@@ -211,6 +219,18 @@ function NetWork() {
     else if (Object.keys(objectAction).length > 0) setObjectActions({});
   }, [objectAction, actionModal, isExecute]);
 
+  useEffect(() => {
+    if (!isExecute && isAddEdge) {
+      network.addEdgeMode();
+    }
+  }, [isAddEdge, isExecute]);
+
+  useEffect(() => {
+    if (!isExecute && isAddNode) {
+      network.addNodeMode();
+    }
+  }, [isAddNode, isExecute]);
+
   const buttonsOptions = useCallback(
     (
       handleModalCallback,
@@ -252,7 +272,7 @@ function NetWork() {
         handleModalRemove,
         handleModalRemoveAll
       )}
-      <VisNetworkReactComponent
+      <VisNetwork
         data={graph}
         options={options}
         events={events}
@@ -273,6 +293,8 @@ function NetWork() {
           ...objectAction,
         }}
         removeData={() => {
+          setAddEdge(false);
+          setAddNode(false);
           network?.disableEditMode();
           setObjectActions({});
         }}

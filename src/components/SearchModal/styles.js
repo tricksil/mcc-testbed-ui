@@ -9,6 +9,7 @@ export const Container = styled.div`
   /* margin: 30px 0; */
   /* height: 100px; */
   max-height: 300px;
+  margin-top: 20px;
 `;
 
 export const ScenarioContent = styled.div`

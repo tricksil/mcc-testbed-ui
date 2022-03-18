@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useCallback,
+  useMemo,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,16 +16,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  TextField,
 } from '@material-ui/core';
 
-import AsyncSelect from 'react-select/async';
-
-import axios from 'axios';
+import scenarioApi from '~/services/scenario';
 
 import { ScenarioContent, Container } from './styles';
 import { ApiContext } from '~/context/ApiContext';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
+import { ScenarioContext } from '~/context/ScenarioContext';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -37,17 +38,19 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchModal = forwardRef((props, ref) => {
   const { ip } = useContext(ApiContext);
-  const { convertionalScenaryToVis, onChangeName } = useContext(GraphContext);
+  const { convertionalScenaryToVis } = useContext(GraphContext);
+  const { onChangeName } = useContext(ScenarioContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const [seleted, setSeleted] = useState({});
   const [scenarios, setScenarios] = useState([]);
+  const [name, setName] = useState('');
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const history = useHistory();
 
   const getScenarios = useCallback(async () => {
     try {
-      const response = await axios.get(`http://${ip}:5000/scenarios/list`);
+      const response = await scenarioApi.getAllScenario(ip);
       setScenarios(response.data.scenarios);
       // eslint-disable-next-line no-empty
     } catch (error) {}
@@ -69,6 +72,11 @@ const SearchModal = forwardRef((props, ref) => {
   const handleClose = () => {
     setOpen((x) => !x);
     setSeleted({});
+    setName('');
+  };
+
+  const changeName = (event) => {
+    setName(event.target.value);
   };
 
   function handleSuccess() {
@@ -82,9 +90,15 @@ const SearchModal = forwardRef((props, ref) => {
     history.push('/network');
   }
 
+  const scenariosMemo = useMemo(
+    () =>
+      scenarios.filter((scenario) => scenario.name.includes(name)) || scenarios,
+    [name, scenarios]
+  );
+
   const renderScenarios = useCallback(
     () =>
-      scenarios?.map((value) => (
+      scenariosMemo?.map((value) => (
         <ScenarioContent
           key={value.name}
           onClick={() => setSeleted(value)}
@@ -93,8 +107,28 @@ const SearchModal = forwardRef((props, ref) => {
           <p>{value.name}</p>
         </ScenarioContent>
       )),
-    [scenarios, seleted.name]
+    [scenariosMemo, seleted.name]
   );
+
+  function renderNameContent() {
+    return (
+      <>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Search"
+          type="text"
+          fullWidth
+          value={name}
+          onChange={changeName}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Search for scenario"
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -110,6 +144,7 @@ const SearchModal = forwardRef((props, ref) => {
             Search Scenarios
           </DialogTitle>
           <DialogContent>
+            {renderNameContent()}
             <Container>{renderScenarios()}</Container>
           </DialogContent>
           <DialogActions>

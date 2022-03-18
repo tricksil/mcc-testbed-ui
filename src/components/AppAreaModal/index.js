@@ -1,26 +1,18 @@
 /* eslint-disable no-return-await */
 /* eslint-disable func-names */
-import {
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useContext,
-  useRef,
-} from 'react';
+import { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 import { DialogContent, Divider, Dialog, Button } from '@material-ui/core';
 
-import axios from 'axios';
 import { DialogTitleCustom } from './styles';
-import { ApiContext } from '~/context/ApiContext';
 import remove from '~/assets/remove.svg';
 import AddAppModal from '../AddAppModal';
 import ExecAppModal from '../ExecAppModal';
-import ShowTableModal from '../ShowTableModal';
+import ShowLogsModal from '../ShowLogsModal';
 
 const AppAreaModal = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const addAppRef = useRef();
-  const showTableRef = useRef();
+  const showLogsRef = useRef();
   const execAppRef = useRef();
 
   useImperativeHandle(ref, () => ({
@@ -40,7 +32,7 @@ const AppAreaModal = forwardRef((props, ref) => {
   };
 
   const handleShowTableModal = () => {
-    showTableRef.current?.open();
+    showLogsRef.current?.open();
   };
 
   const handleExecModal = () => {
@@ -76,7 +68,7 @@ const AppAreaModal = forwardRef((props, ref) => {
             </Button>
           </DialogContent>
           <AddAppModal ref={addAppRef} />
-          <ShowTableModal ref={showTableRef} />
+          <ShowLogsModal ref={showLogsRef} />
           <ExecAppModal ref={execAppRef} handleCloseAppArea={handleClose} />
         </Dialog>
       )}

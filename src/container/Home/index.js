@@ -8,15 +8,15 @@ import cloud from '~/assets/cloud_2.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import SearchModal from '~/components/SearchModal';
-import ConfigModal from '~/components/ConfigModal';
+import ServerConfigurationModal from '~/components/ServerConfigurationModal';
 import { ApiContext } from '~/context/ApiContext';
-import ScenarioModal from '~/components/ScenarioModal';
+import NameScenarioModal from '~/components/NameScenarioModal';
 
 function Home() {
   const uploadRef = useRef();
   const searchRef = useRef();
-  const configRef = useRef();
-  const scenarioRef = useRef();
+  const serverConfigurationRef = useRef();
+  const nameScenarioRef = useRef();
   const history = useHistory();
   const { convertionalScenaryToVis, setGraph } = useContext(GraphContext);
   const { snackBarOpen } = useContext(SnackbarContext);
@@ -27,13 +27,13 @@ function Home() {
 
   useEffect(() => {
     if (!ip) {
-      configRef.current?.open();
+      serverConfigurationRef.current?.open();
     }
   }, [ip]);
 
   function handleCreateScenery() {
     setGraph({ nodes: [], edges: [] });
-    scenarioRef.current?.open();
+    nameScenarioRef.current?.open();
   }
 
   function upload() {
@@ -65,7 +65,7 @@ function Home() {
 
   useEffect(() => {
     if (action && action === 'upload') {
-      scenarioRef.current?.open();
+      nameScenarioRef.current?.open();
     }
   }, [action]);
 
@@ -126,22 +126,22 @@ function Home() {
 
           <Styles.BoardButton
             type="button"
-            onClick={() => configRef.current?.open()}
+            onClick={() => serverConfigurationRef.current?.open()}
           >
             Server Configuration
           </Styles.BoardButton>
         </Styles.BoardOptions>
       </Styles.ContentOptions>
-      <ScenarioModal
+      <NameScenarioModal
         onSubmit={() => (action && action === 'upload' ? upload() : null)}
         onClose={() => {
           setAction(null);
         }}
-        ref={scenarioRef}
+        ref={nameScenarioRef}
         title={title}
       />
       <SearchModal ref={searchRef} />
-      <ConfigModal ref={configRef} />
+      <ServerConfigurationModal ref={serverConfigurationRef} />
     </Styles.Container>
   );
 }

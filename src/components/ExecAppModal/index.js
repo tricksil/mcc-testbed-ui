@@ -7,39 +7,19 @@ import {
   useImperativeHandle,
   useEffect,
   useContext,
+  useCallback,
 } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Select,
-  InputLabel,
-  MenuItem,
-  FormControl,
-} from '@material-ui/core';
+import { Select, InputLabel, MenuItem, FormControl } from '@material-ui/core';
 
 import TextField from '@material-ui/core/TextField';
-import axios from 'axios';
 
 import { ApiContext } from '~/context/ApiContext';
 import { SnackbarContext } from '~/context/SnackContext';
-import { GraphContext } from '~/context/GraphContext';
-import { execStatus } from '~/services/execApp';
-
-const useStyles = makeStyles((theme) => ({
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  // contentVnc: {
-  //   height: '100vh',
-  // },
-}));
+import { ScenarioContext } from '~/context/ScenarioContext';
+import appApi from '~/services/app';
+import CustomNetworkModal from '../CustomNetworkModal';
 
 const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
-  const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [appName, setAppName] = useState('');
   const [appList, setAppLis] = useState([]);
@@ -63,7 +43,7 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
   const [broadcastSignalError, setBroadcasSignalError] = useState(false);
   const [interactionsError, setInteractionsError] = useState(false);
   const [isDisabled, setDisabled] = useState(false);
-  const { setExecApkStatus } = useContext(GraphContext);
+  const { setExecApkStatus } = useContext(ScenarioContext);
   const { ip } = useContext(ApiContext);
   const { snackBarOpen } = useContext(SnackbarContext);
 
@@ -84,21 +64,19 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
     handleClose();
   }
 
-  async function getAllApk() {
+  const getAllApk = useCallback(async () => {
     try {
-      const response = await axios.get(`http://${ip}:5000/apks/list`);
+      const response = await appApi.getAllApk(ip);
       if (response.data.code === 200) {
         setAppLis(response.data.apks);
       }
       // eslint-disable-next-line no-empty
     } catch (err) {}
-  }
+  }, [ip]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (open) getAllApk();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, getAllApk]);
 
   function handleChangeAppName(event) {
     const appNameChange = event.target.value;
@@ -201,9 +179,9 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
         arguments: argumentsExec.trim(),
         interactions: Number(interactions),
       };
-      await axios.get(`http://${ip}:5000/exec/clean`);
-      const response = await axios.post(`http://${ip}:5000/exec`, data);
-      await execStatus(ip, setExecApkStatus);
+      await appApi.executionClean(ip);
+      await appApi.executionApk(ip, data);
+      await appApi.executionStatus(ip, setExecApkStatus);
       snackBarOpen('Successful Exec Apk.', 'success');
     } catch (err) {
       snackBarOpen('Error. Try Again Later.', 'error');
@@ -220,154 +198,140 @@ const ExecAppModal = forwardRef(({ handleCloseAppArea }, ref) => {
     }
   }
 
+  function renderExecAppContent() {
+    return (
+      <>
+        <FormControl fullWidth margin="dense">
+          <InputLabel id="type">App Name</InputLabel>
+          <Select
+            labelId="Enter the APK name"
+            id="type"
+            value={appName}
+            onChange={handleChangeAppName}
+            fullWidth
+            error={appNameError}
+          >
+            {appList?.map((value) => (
+              <MenuItem key={value} value={value}>
+                {value}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Log Tag"
+          type="text"
+          fullWidth
+          value={logTag}
+          onChange={handleChangeLogTag}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the Log Tag"
+          error={logTagError}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="MainActivity"
+          type="text"
+          fullWidth
+          value={mainActivity}
+          onChange={handleChangeMainActivity}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the MainActivity"
+          error={mainActivityError}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="RunActivity"
+          type="text"
+          fullWidth
+          value={runActivity}
+          onChange={handleChangeRunActivity}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the RunActivity"
+          error={runActivityError}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Extras"
+          type="text"
+          fullWidth
+          value={extras}
+          onChange={handleChangeExtras}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the Extras"
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Broadcast Signal"
+          type="text"
+          fullWidth
+          value={broadcastSignal}
+          onChange={handleChangeBroadcasSignal}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the Broadcast Signal"
+          error={broadcastSignalError}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Arguments"
+          type="text"
+          fullWidth
+          value={argumentsExec}
+          onChange={handleChangeArgumentsExec}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the Arguments"
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="api"
+          label="Interactions"
+          type="text"
+          fullWidth
+          value={interactions}
+          onChange={handleChangeInteractions}
+          autoComplete="off"
+          aria-autocomplete="none"
+          placeholder="Enter the Interactions"
+          error={interactionsError}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       {open && (
-        <Dialog
+        <CustomNetworkModal
           open={open}
-          aria-labelledby="customized-dialog-title"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle id="customized-dialog-title" className={classes.title}>
-            Execution App
-          </DialogTitle>
-          <DialogContent>
-            <FormControl
-              className={classes.formControl}
-              fullWidth
-              margin="dense"
-            >
-              <InputLabel id="type">App Name</InputLabel>
-              <Select
-                labelId="Enter the APK name"
-                id="type"
-                value={appName}
-                onChange={handleChangeAppName}
-                fullWidth
-                error={appNameError}
-              >
-                {appList?.map((value) => (
-                  <MenuItem key={value} value={value}>
-                    {value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Log Tag"
-              type="text"
-              fullWidth
-              value={logTag}
-              onChange={handleChangeLogTag}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the Log Tag"
-              error={logTagError}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="MainActivity"
-              type="text"
-              fullWidth
-              value={mainActivity}
-              onChange={handleChangeMainActivity}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the MainActivity"
-              error={mainActivityError}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="RunActivity"
-              type="text"
-              fullWidth
-              value={runActivity}
-              onChange={handleChangeRunActivity}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the RunActivity"
-              error={runActivityError}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Extras"
-              type="text"
-              fullWidth
-              value={extras}
-              onChange={handleChangeExtras}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the Extras"
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Broadcast Signal"
-              type="text"
-              fullWidth
-              value={broadcastSignal}
-              onChange={handleChangeBroadcasSignal}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the Broadcast Signal"
-              error={broadcastSignalError}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Arguments"
-              type="text"
-              fullWidth
-              value={argumentsExec}
-              onChange={handleChangeArgumentsExec}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the Arguments"
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="api"
-              label="Interactions"
-              type="text"
-              fullWidth
-              value={interactions}
-              onChange={handleChangeInteractions}
-              autoComplete="off"
-              aria-autocomplete="none"
-              placeholder="Enter the Interactions"
-              error={interactionsError}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleClose}
-              color="secondary"
-              disabled={isDisabled}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmitSave}
-              color="primary"
-              disabled={isDisabled}
-            >
-              Execution
-            </Button>
-          </DialogActions>
-        </Dialog>
+          title="Execution App"
+          titleCancel="Cancel"
+          titleSubmit="Execution"
+          handleClose={handleClose}
+          handleSubmit={handleSubmitSave}
+          ContentComponent={renderExecAppContent()}
+          propsCancel={{ disabled: isDisabled }}
+          propsSubmit={{ disabled: isDisabled }}
+        />
       )}
     </>
   );

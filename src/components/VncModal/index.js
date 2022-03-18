@@ -10,7 +10,6 @@ import {
   useEffect,
   useCallback,
 } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {
   Dialog,
@@ -20,22 +19,12 @@ import {
 } from '@material-ui/core';
 import { v4 } from 'uuid';
 
-import axios from 'axios';
+import vncApi from '~/services/vnc';
 import { Iframe } from './styles';
 import { GraphContext } from '~/context/GraphContext';
 import { ApiContext } from '~/context/ApiContext';
 
-const useStyles = makeStyles((theme) => ({
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  // contentVnc: {
-  //   height: '100vh',
-  // },
-}));
-
 const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
-  const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const { findNode } = useContext(GraphContext);
@@ -63,15 +52,9 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
     setOpen((x) => !x);
   };
 
-  function clearStates() {
-    setOpen((x) => !x);
-  }
-
   const getIframe = useCallback(async (ipApi, vncPortApi) => {
     try {
-      const response = await axios.get(
-        `http://${ipApi}:${vncPortApi}/vnc_auto.html`
-      );
+      const response = await vncApi.vncStatus(ipApi, vncPortApi);
       if (response.status === 200 && response.data) {
         setCount(`${v4()}`);
         setLouded('');
@@ -100,9 +83,7 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
           aria-labelledby="customized-dialog-title"
           maxWidth="md"
         >
-          <DialogTitle id="customized-dialog-title" className={classes.title}>
-            {name}
-          </DialogTitle>
+          <DialogTitle id="customized-dialog-title">{name}</DialogTitle>
           <DialogContent
             style={{ width: '80vh', height: '100vw', overflow: 'hidden' }}
           >
@@ -119,9 +100,6 @@ const VncModal = forwardRef(({ vncPort, removeData }, ref) => {
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            {/* <Button onClick={handleSubmit} color="primary">
-              Close
-            </Button> */}
           </DialogActions>
         </Dialog>
       )}

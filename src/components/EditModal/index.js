@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 import PropTypes from 'prop-types';
 import {
   useState,
@@ -8,31 +7,12 @@ import {
   useContext,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Select,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Switch,
-  FormGroup,
-  FormControlLabel,
-} from '@material-ui/core';
-
-import phone from '~/assets/phone.svg';
-import server from '~/assets/server.svg';
-import loadBalance from '~/assets/load_balance.svg';
-import switchDevice from '~/assets/switch.svg';
-import { DeviceFactory } from '~/helpers/deviceFactory';
 import { GraphContext } from '~/context/GraphContext';
-import { emptyField, ipIncomplete } from '~/validation';
-import IpMaskInput from '../IpMaskInput';
-import { chooseTypeDevice } from '~/helpers/convertionalScenery';
+import { validationEdge, validationNodeEdit } from '~/validation';
+import Edge from '../Edge';
+import Node from '../Node';
+import { saveEdge, saveNode, saveNodesAndEdge } from '~/utils';
+import CustomNetworkModal from '../CustomNetworkModal';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -52,6 +32,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const [device, setDevice] = useState('');
   const [deviceChecked, setDeviceChecked] = useState('');
   const [name, setName] = useState('');
+  const [nameCache, setNameCache] = useState('');
   const [ip, setIp] = useState('');
   const [ipCache, setIpCache] = useState('');
   const [bandwidth, setBandwidth] = useState('');
@@ -91,6 +72,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     if (data.action === 'edit' && data.type === 'node') {
       const { label, image, ip: ipNode } = data.dataNode;
       setName(label);
+      setNameCache(label);
       setDevice(image);
       if (ipNode) {
         setIp(ipNode);
@@ -101,6 +83,7 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
       const edge = findEdge(data.dataNode.id);
       data.dataNode = { ...data.dataNode, ...edge };
       setName(edge.label);
+      setNameCache(edge.label);
       setBandwidth(edge.bandwidth);
       setDelay(
         !edge.delay?.includes('ms') ? edge.delay : edge.delay.replace('ms', '')
@@ -113,9 +96,6 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     }
   }, [data, data.action, data.type, findEdge]);
 
-  const handleChange = (event) => {
-    setDevice(event.target.value);
-  };
   const handleChangeDeviceCheck = (event) => {
     setDeviceChecked(event.target.value);
     setDeviceCheckedError(false);
@@ -123,10 +103,6 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   const handleChangeName = (event) => {
     setName(event.target.value.split(' ').join(''));
     setNameError(false);
-  };
-  const handleChangeIp = (event) => {
-    setIp(event.target.value);
-    setIpError(false);
   };
 
   const handleChangeDelay = (event) => {
@@ -182,59 +158,6 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     }
   };
 
-  function editEdgeGraph(edge) {
-    const customEdge = {
-      ...edge,
-      label: name,
-      bandwidth: Number(bandwidth),
-      delay: `${delay}`,
-      jitter: `${jitter}`,
-      title: `Delay: ${delay}ms<br>Jitter: ${jitter}ms<br>Bandwidth: ${bandwidth}`,
-    };
-    editEdge(customEdge);
-    removeData();
-  }
-
-  function editNodeModal(node) {
-    const customNode = {
-      ...node,
-      label: name,
-      title: `Name: ${name}`,
-    };
-    if (device !== switchDevice) {
-      customNode.ip = ip;
-      customNode.title = `${customNode.title}<br>IP: ${ip}`;
-      customNode.title = `${customNode.title}<br>Image: ${customNode.dimage}`;
-      setIp('');
-    }
-    editNode(customNode);
-    removeData();
-  }
-
-  function addNodesAndEdge(node) {
-    const typeChoose = chooseTypeDevice(deviceChecked);
-    const customNode = {
-      shape: 'image',
-      image: deviceChecked,
-      size: 15,
-      type: typeChoose,
-    };
-    const customEdge = {
-      bandwidth: Number(bandwidthRandom),
-      delay: `${delayRandom}`,
-      jitter: `${jitterRandom}`,
-    };
-    const graphRandom = DeviceFactory(
-      graph,
-      node?.id,
-      Number(quantity),
-      customEdge,
-      customNode
-    );
-    addNodeRandom(graphRandom);
-    removeData();
-  }
-
   function clearStates() {
     setChecked(false);
     setDelayRandom('');
@@ -261,96 +184,73 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
   }
 
   function builderNodesAndEdge(createNodesRandom) {
-    return function (dataNode) {
+    return function (dataNetwork) {
+      const { dataNode, action } = dataNetwork;
       if (createNodesRandom) {
-        addNodesAndEdge(dataNode);
-      } else if (data.type === 'node' && data.action === 'edit') {
-        editNodeModal(dataNode);
-      } else if (data.type === 'edge' && data.action === 'edit') {
-        editEdgeGraph(dataNode);
+        saveNodesAndEdge(
+          dataNode,
+          addNodeRandom,
+          deviceChecked,
+          bandwidthRandom,
+          delayRandom,
+          jitterRandom,
+          graph,
+          quantity
+        );
+      } else if (data.type === 'node') {
+        saveNode(
+          dataNode,
+          action === 'edit',
+          editNode,
+          device,
+          name,
+          ip,
+          setIp
+        );
+      } else if (data.type === 'edge') {
+        saveEdge(dataNode, editEdge, name, bandwidth, delay, jitter);
       }
+      removeData();
     };
   }
 
-  function validationNode() {
-    let invalid = false;
-    if (device !== switchDevice) {
-      if (emptyField(name)) {
-        setNameError(true);
-        invalid = true;
-      }
-
-      if (emptyField(ip)) {
-        setIpError(true);
-        invalid = true;
-      }
-      if (ipIncomplete(ip)) {
-        setIpError(true);
-        invalid = true;
-      }
-    }
-
-    if (device !== phone && checked) {
-      if (emptyField(deviceChecked)) {
-        setDeviceCheckedError(true);
-
-        invalid = true;
-      }
-
-      if (emptyField(quantity)) {
-        setQuantityError(true);
-        invalid = true;
-      }
-
-      if (emptyField(delayRandom)) {
-        setDelayRandomError(true);
-        invalid = true;
-      }
-
-      if (emptyField(jitterRandom)) {
-        setJitterRandomError(true);
-        invalid = true;
-      }
-
-      if (emptyField(bandwidthRandom)) {
-        setBandwidthRandomError(true);
-        invalid = true;
-      }
-    }
-
-    return invalid;
-  }
-
-  function validationEdge() {
-    let invalid = false;
-
-    if (emptyField(delay)) {
-      setDelayError(true);
-      invalid = true;
-    }
-    if (emptyField(jitter)) {
-      setJitterError(true);
-      invalid = true;
-    }
-
-    if (emptyField(bandwidth)) {
-      setBandwidthError(true);
-      invalid = true;
-    }
-
-    return invalid;
-  }
-
   function validation() {
-    return data?.type === 'node' ? validationNode() : validationEdge();
+    return data?.type === 'node'
+      ? validationNodeEdit(
+          device,
+          name,
+          nameCache,
+          setNameError,
+          ip,
+          checked,
+          setIpError,
+          deviceChecked,
+          setDeviceCheckedError,
+          quantity,
+          setQuantityError,
+          delayRandom,
+          setDelayRandomError,
+          jitterRandom,
+          setJitterRandomError,
+          bandwidthRandom,
+          setBandwidthRandomError,
+          graph
+        )
+      : validationEdge(
+          delay,
+          setDelayError,
+          jitter,
+          setJitterError,
+          bandwidth,
+          setBandwidthError
+        );
   }
 
   function handleSubmit() {
-    const { dataNode } = data;
     if (validation()) {
       return;
     }
-    builderNodesAndEdge(checked)(dataNode);
+    builderNodesAndEdge(checked)(data);
     clearStates();
   }
 
@@ -359,228 +259,77 @@ const EditModal = forwardRef(({ data, removeData }, ref) => {
     clearStates();
   };
 
-  function renderCheckedRandom() {
-    return (
-      <>
-        <h3>Node</h3>
-        <TextField
-          margin="dense"
-          id="quantity"
-          label="Quantity"
-          fullWidth
-          value={quantity}
-          onChange={handleChangeQuantity}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={quantityError}
-        />
-        <FormControl className={classes.formControl} fullWidth margin="dense">
-          <InputLabel id="type">Type</InputLabel>
-          <Select
-            labelId="type"
-            id="type"
-            value={deviceChecked}
-            onChange={handleChangeDeviceCheck}
-            fullWidth
-            error={deviceCheckedError}
-          >
-            <MenuItem value={switchDevice}>Switch</MenuItem>
-            <MenuItem value={phone}>Smartphone</MenuItem>
-            <MenuItem value={server}>Server</MenuItem>
-          </Select>
-        </FormControl>
-        <h3>Edge</h3>
-        <TextField
-          margin="dense"
-          id="delayRandom"
-          label="Delay(ms)"
-          type="text"
-          fullWidth
-          value={delayRandom}
-          onChange={handleChangeDelayRandom}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={delayRandomError}
-        />
-        <TextField
-          margin="dense"
-          id="jitterRandom"
-          label="Jitter(ms)"
-          type="text"
-          fullWidth
-          value={jitterRandom}
-          onChange={handleChangeJitterRandom}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={jitterRandomError}
-        />
-        <TextField
-          margin="dense"
-          id="bandwidthRandom"
-          label="Bandwidth"
-          type="text"
-          fullWidth
-          value={bandwidthRandom}
-          onChange={handleChangeBandwidthRandom}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={bandwidthRandomError}
-        />
-      </>
-    );
-  }
-
-  function renderNodeOptions() {
-    return (
-      <>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          fullWidth
-          value={name}
-          onChange={handleChangeName}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={nameError}
-        />
-        <IpMaskInput
-          onChange={setIp}
-          value={ip}
-          error={ipError}
-          setError={setIpError}
-          block
-          ipCache={ipCache}
-        />
-      </>
-    );
-  }
   function renderNode() {
     return (
-      <>
-        <FormControl className={classes.formControl} fullWidth margin="dense">
-          <InputLabel id="type">Type</InputLabel>
-          <Select
-            labelId="type"
-            id="type"
-            value={device}
-            onChange={handleChange}
-            fullWidth
-            disabled
-          >
-            <MenuItem value={phone}>Smartphone</MenuItem>
-            <MenuItem value={switchDevice}>Switch</MenuItem>
-            <MenuItem value={server}>Server</MenuItem>
-          </Select>
-        </FormControl>
-
-        {device && device !== switchDevice && renderNodeOptions()}
-
-        {data.dataNode.type !== 'client' && (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  size="medium"
-                  checked={checked}
-                  onChange={toggleChecked}
-                />
-              }
-              label="add nodes"
-              labelPlacement="start"
-            />
-          </FormGroup>
-        )}
-
-        {checked && renderCheckedRandom()}
-      </>
+      <Node
+        device={device}
+        data={data}
+        name={name}
+        handleChangeName={handleChangeName}
+        nameError={nameError}
+        setIp={setIp}
+        ip={ip}
+        ipError={ipError}
+        setIpError={setIpError}
+        ipCache={ipCache}
+        edit={data.action === 'edit'}
+        checked={checked}
+        toggleChecked={toggleChecked}
+        quantity={quantity}
+        handleChangeQuantity={handleChangeQuantity}
+        quantityError={quantityError}
+        deviceChecked={deviceChecked}
+        handleChangeDeviceCheck={handleChangeDeviceCheck}
+        deviceCheckedError={deviceCheckedError}
+        delayRandom={delayRandom}
+        handleChangeDelayRandom={handleChangeDelayRandom}
+        delayRandomError={delayRandomError}
+        jitterRandom={jitterRandom}
+        handleChangeJitterRandom={handleChangeJitterRandom}
+        jitterRandomError={jitterRandomError}
+        bandwidthRandom={bandwidthRandom}
+        handleChangeBandwidthRandom={handleChangeBandwidthRandom}
+        bandwidthRandomError={bandwidthRandomError}
+      />
     );
   }
 
   function renderEdge() {
     return (
-      <>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          fullWidth
-          value={name}
-          onChange={handleChangeName}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={nameError}
-        />
-        <TextField
-          margin="dense"
-          id="delay"
-          label="Delay(ms)"
-          type="text"
-          fullWidth
-          value={delay}
-          onChange={handleChangeDelay}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={delayError}
-        />
-        <TextField
-          margin="dense"
-          id="jitter"
-          label="Jitter(ms)"
-          type="text"
-          fullWidth
-          value={jitter}
-          onChange={handleChangeJitter}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={jitterError}
-        />
-        <TextField
-          margin="dense"
-          id="bandwidth"
-          label="Bandwidth"
-          type="text"
-          fullWidth
-          value={bandwidth}
-          onChange={handleChangeBandwidth}
-          autoComplete="off"
-          aria-autocomplete="none"
-          error={bandwidthError}
-        />
-      </>
+      <Edge
+        name={name}
+        handleChangeName={handleChangeName}
+        delay={delay}
+        handleChangeDelay={handleChangeDelay}
+        delayError={delayError}
+        jitter={jitter}
+        handleChangeJitter={handleChangeJitter}
+        jitterError={jitterError}
+        bandwidth={bandwidth}
+        handleChangeBandwidth={handleChangeBandwidth}
+        bandwidthError={bandwidthError}
+      />
     );
   }
 
   return (
     <>
       {open && (
-        <Dialog
+        <CustomNetworkModal
           open={open}
-          onClose={handleClose}
-          aria-labelledby="customized-dialog-title"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle id="customized-dialog-title" className={classes.title}>
-            {data.type}
-          </DialogTitle>
-          <DialogContent>
-            {data?.type === 'node' && renderNode()}
-            {data?.type === 'edge' && renderEdge()}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} color="primary">
-              {`${data.action} ${data.type}`}
-            </Button>
-          </DialogActions>
-        </Dialog>
+          classes={classes}
+          title={data.type}
+          titleCancel="Cancel"
+          titleSubmit={`${data.action} ${data.type}`}
+          handleClose={handleClose}
+          handleSubmit={handleSubmit}
+          ContentComponent={
+            <>
+              {data?.type === 'node' && renderNode()}
+              {data?.type === 'edge' && renderEdge()}
+            </>
+          }
+        />
       )}
     </>
   );

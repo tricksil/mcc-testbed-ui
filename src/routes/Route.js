@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Route } from 'react-router-dom';
-import DefaultLayout from '~/page/_layouts/default';
-import NetworkLayout from '~/page/_layouts/network';
+import DefaultLayout from '~/container/_layouts/default';
+import NetworkLayout from '~/container/_layouts/network';
 
 export default function RouteWrapper({
   component: Component,

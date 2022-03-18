@@ -1,8 +1,4 @@
-/* eslint-disable no-return-await */
-/* eslint-disable func-names */
-import PropTypes from 'prop-types';
 import { useState, forwardRef, useImperativeHandle, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {
   Dialog,
@@ -11,26 +7,14 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 
-import TextField from '@material-ui/core/TextField';
+import scenarioApi from '~/services/scenario';
+import appApi from '~/services/app';
 
-import axios from 'axios';
-
-import { TrafficOutlined } from '@material-ui/icons';
 import { Action, ActionContent, Success, Error } from './styles';
 import { ApiContext } from '~/context/ApiContext';
 import IpMaskInput from '../IpMaskInput';
 
-const useStyles = makeStyles((theme) => ({
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  // contentVnc: {
-  //   height: '100vh',
-  // },
-}));
-
-const ConfigModal = forwardRef((props, ref) => {
-  const classes = useStyles();
+const ServerConfigurationModal = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const { ip: ipSave, changeIp } = useContext(ApiContext);
   const [ip, setIp] = useState(ipSave);
@@ -58,18 +42,15 @@ const ConfigModal = forwardRef((props, ref) => {
     handleClose();
   }
 
-  function handleChangeIp(event) {
-    setIp(event.target.value);
-  }
   async function promiseOptions() {
     setLoading(true);
     setConnected(false);
     setError(false);
     try {
-      const response = await axios.get(`http://${ip}:5000/status`);
+      const response = await scenarioApi.apiStatus(ip);
       if (response.data.code === 200) {
-        await axios.get(`http://${ip}:5000/exec/clean`);
-        await axios.get(`http://${ip}:5000/stop`);
+        await appApi.executionClean(ip);
+        await scenarioApi.stopScenario(ip);
         setConnected(true);
       } else {
         setError(true);
@@ -96,7 +77,7 @@ const ConfigModal = forwardRef((props, ref) => {
           maxWidth="sm"
           // fullWidth
         >
-          <DialogTitle id="customized-dialog-title" className={classes.title}>
+          <DialogTitle id="customized-dialog-title">
             Server Configuration
           </DialogTitle>
           <DialogContent>
@@ -145,6 +126,6 @@ const ConfigModal = forwardRef((props, ref) => {
   );
 });
 
-ConfigModal.displayName = 'ConfigModal';
+ServerConfigurationModal.displayName = 'ServerConfigurationModal';
 
-export default ConfigModal;
+export default ServerConfigurationModal;

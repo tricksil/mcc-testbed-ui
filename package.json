@@ -3,7 +3,7 @@
   "title": "MCC Testbed",
   "summary": "A test tool for Mobile Cloud Computing",
   "description": "The MCC Testbed Tool assists Mobile Cloud Computer developers and researchers in creating custom scenarios and running custom experiments in a virtual test environment based on lightweight virtualization.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "author": "Patrick Silva <patrickeeep12@gmail.com>",
   "repository": {
@@ -58,6 +58,11 @@
       "target": "dmg",
       "category": "Development",
       "icon": "resources/icon512x512.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
     },
     "linux": {
       "target": [

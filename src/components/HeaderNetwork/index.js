@@ -3,7 +3,6 @@
 import { Link } from 'react-router-dom';
 import { useContext, useState, useRef, useEffect } from 'react';
 
-import axios from 'axios';
 import {
   Container,
   Content,
@@ -20,30 +19,33 @@ import app from '~/assets/android.svg';
 import { GraphContext } from '~/context/GraphContext';
 import { SnackbarContext } from '~/context/SnackContext';
 import { ApiContext } from '~/context/ApiContext';
-import ScenarioConfigModal from '../ScenarioConfigModal';
+import SaveScenarioModal from '../SaveScenarioModal';
 import AppAreaModal from '../AppAreaModal';
-import { execStatus } from '~/services/execApp';
+import appApi from '~/services/app';
+import scenarioApi from '~/services/scenario';
+import { ScenarioContext } from '~/context/ScenarioContext';
 
 let timer = null;
 function HeaderNetwork() {
+  const { graph, convertionalScenery, cleanGraphStates } = useContext(
+    GraphContext
+  );
   const {
-    graph,
-    convertionalScenery,
     isExecute,
     setExecute,
     execApkStatus,
     isDisableBecauseExecApp,
     setExecApkStatus,
-    cleanGraphStates,
-  } = useContext(GraphContext);
+    cleanScenarioStates,
+  } = useContext(ScenarioContext);
   const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
   const [isLoading, setLoading] = useState(false);
-  const scenarioConfigRef = useRef();
+  const saveScenariogRef = useRef();
   const appAreaRef = useRef();
 
   async function handleExecStatus() {
-    await execStatus(ip, setExecApkStatus);
+    await appApi.executionStatus(ip, setExecApkStatus);
   }
 
   useEffect(() => {
@@ -60,20 +62,17 @@ function HeaderNetwork() {
     };
   }, [execApkStatus]);
 
-  async function handleExecScenery() {
+  async function handleExecScenerio() {
     setLoading((x) => !x);
     if (graph?.nodes.length === 0) {
       snackBarOpen('Scenary not be void!', 'error');
       setLoading((x) => !x);
       return;
     }
-    const sceneryTestbed = convertionalScenery(graph);
+    const scenerioTestbed = convertionalScenery(graph);
     try {
       snackBarOpen('Loading Scenery', 'info');
-      const { data } = await axios.post(
-        `http://${ip}:5000/create`,
-        sceneryTestbed
-      );
+      const { data } = await scenarioApi.executionScenerio(ip, scenerioTestbed);
       if (data.code === 400) {
         snackBarOpen(data.message, 'error');
       } else {
@@ -91,7 +90,7 @@ function HeaderNetwork() {
     setLoading((x) => !x);
     snackBarOpen('Loading Stop Scenery', 'info');
     try {
-      const { data } = await axios.get(`http://${ip}:5000/stop`);
+      const { data } = await scenarioApi.stopScenario(ip);
       snackBarOpen(data.message, 'success');
       setExecute(false);
       setExecApkStatus('');
@@ -102,7 +101,7 @@ function HeaderNetwork() {
     }
   }
   async function handleSaveScenario() {
-    scenarioConfigRef.current?.open();
+    saveScenariogRef.current?.open();
   }
   async function handleAppArea() {
     appAreaRef.current?.open();
@@ -110,6 +109,7 @@ function HeaderNetwork() {
 
   function handleBack() {
     cleanGraphStates();
+    cleanScenarioStates();
   }
 
   return (
@@ -125,7 +125,7 @@ function HeaderNetwork() {
           <Button
             type="button"
             onClick={() =>
-              isExecute ? handleStopScenery() : handleExecScenery()
+              isExecute ? handleStopScenery() : handleExecScenerio()
             }
             disabled={isLoading}
           >
@@ -160,7 +160,7 @@ function HeaderNetwork() {
           )}
         </aside>
       </Content>
-      <ScenarioConfigModal ref={scenarioConfigRef} />
+      <SaveScenarioModal ref={saveScenariogRef} />
       <AppAreaModal ref={appAreaRef} />
     </Container>
   );

@@ -1,27 +1,20 @@
-import { createContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 import {
   convertionalToTestbed,
   convertionalToVis,
-} from '~/helpers/convertionalScenery';
+} from '~/utils/helpers/convertionalScenery';
 
-export const GraphContext = createContext();
+export const GraphContext = createContext({});
 let time;
 export function GraphProvider({ children }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
-  const [isExecute, setExecute] = useState(false);
-  const [name, onChangeName] = useState('');
-  const [execApkStatus, setExecApkStatus] = useState('');
-  const [countupExecuteTime, setCountupExecuteTime] = useState(0);
 
   useEffect(() => {
     const graphSave = async () => {
       const getGraph = await JSON.parse(localStorage.getItem('graph'));
-      const getName = await JSON.parse(localStorage.getItem('name'));
       setGraph((x) => ({ ...x, ...getGraph }));
-      onChangeName(getName);
     };
     graphSave();
   }, []);
@@ -29,10 +22,6 @@ export function GraphProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('graph', JSON.stringify(graph));
   }, [graph]);
-
-  useEffect(() => {
-    localStorage.setItem('name', JSON.stringify(name));
-  }, [name]);
 
   function createNode(node) {
     setGraph((prevState) => ({
@@ -132,34 +121,7 @@ export function GraphProvider({ children }) {
     }));
   }
 
-  const isDisableBecauseExecApp = useMemo(() => {
-    switch (execApkStatus) {
-      case 'EXECUTING':
-        return true;
-
-      default:
-        return false;
-    }
-  }, [execApkStatus]);
-
-  useEffect(() => {
-    time = setInterval(() => {
-      setCountupExecuteTime((prev) => prev + 1);
-    }, 1000);
-    if (execApkStatus !== 'EXECUTING') {
-      console.log(`${countupExecuteTime}s`);
-      setCountupExecuteTime(0);
-      clearInterval(time);
-    }
-
-    return () => clearInterval(time);
-  }, [countupExecuteTime, execApkStatus]);
-
   const cleanGraphStates = () => {
-    onChangeName('');
-    setExecApkStatus('');
-    setCountupExecuteTime(0);
-    setExecute(false);
     setGraph({ nodes: [], edges: [] });
   };
 
@@ -167,7 +129,6 @@ export function GraphProvider({ children }) {
     <GraphContext.Provider
       value={{
         graph,
-        isExecute,
         isSmartphone,
         setGraph,
         createNode,
@@ -181,12 +142,6 @@ export function GraphProvider({ children }) {
         removeNodeOrEdges,
         convertionalScenery,
         convertionalScenaryToVis,
-        setExecute,
-        name,
-        onChangeName,
-        execApkStatus,
-        setExecApkStatus,
-        isDisableBecauseExecApp,
         cleanGraphStates,
       }}
     >

@@ -1,23 +1,10 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable func-names */
 import PropTypes from 'prop-types';
-import {
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useContext,
-  useMemo,
-} from 'react';
+import { useState, forwardRef, useImperativeHandle, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from '@material-ui/core';
 
 import { GraphContext } from '~/context/GraphContext';
+import CustomNetworkModal from '../CustomNetworkModal';
+import { useNodeTitle } from './hooks';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -54,61 +41,20 @@ const DeleteModal = forwardRef(({ data, removeData }, ref) => {
     clearStates();
   }
 
-  const textSubmit = useMemo(() => {
-    if (Object.keys(data).length === 0) {
-      return 'delete nodes and edges';
-    }
-    const node = data?.dataNode?.nodes && 'node';
-    const end =
-      data?.dataNode?.nodes && data?.dataNode?.edges?.length > 0 ? 'end' : '';
-    const edges =
-      data?.dataNode?.edges?.length === 1
-        ? 'edge'
-        : data?.dataNode?.edges?.length > 1
-        ? 'edges'
-        : '';
-    return `${data.action} ${node} ${end} ${edges}`;
-  }, [data]);
-
-  const title = useMemo(() => {
-    if (Object.keys(data).length === 0) {
-      return 'nodes and edges';
-    }
-    const node = data?.dataNode?.nodes && 'node';
-    const end =
-      data?.dataNode?.nodes && data?.dataNode?.edges?.length > 0 ? 'end' : '';
-    const edges =
-      data?.dataNode?.edges?.length === 1
-        ? 'link'
-        : data?.dataNode?.edges?.length > 1
-        ? 'links'
-        : '';
-    return `${data.action} ${node} ${end} ${edges}`;
-  }, [data]);
+  const title = useNodeTitle(data);
 
   return (
     <>
       {open && (
-        <Dialog
+        <CustomNetworkModal
           open={open}
-          onClose={handleClose}
-          aria-labelledby="customized-dialog-title"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle id="customized-dialog-title" className={classes.title}>
-            Are you sure you want to remove these {title}?
-          </DialogTitle>
-          <DialogContent />
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} color="primary">
-              {textSubmit}
-            </Button>
-          </DialogActions>
-        </Dialog>
+          classes={classes}
+          title={`Are you sure you want to remove these ${title}`}
+          titleCancel="Cancel"
+          titleSubmit={title}
+          handleClose={handleClose}
+          handleSubmit={handleSubmit}
+        />
       )}
     </>
   );

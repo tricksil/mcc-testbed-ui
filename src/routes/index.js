@@ -1,6 +1,6 @@
 import { Switch } from 'react-router-dom';
-import Home from '~/page/Home';
-import NetWork from '~/page/Network';
+import Home from '~/container/Home';
+import NetWork from '~/container/Network';
 
 import Route from './Route';
 

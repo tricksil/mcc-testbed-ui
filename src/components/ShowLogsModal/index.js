@@ -1,6 +1,5 @@
 /* eslint-disable no-return-await */
 /* eslint-disable func-names */
-import PropTypes from 'prop-types';
 import {
   useState,
   forwardRef,
@@ -16,21 +15,16 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 
-import { useHistory } from 'react-router-dom';
+import appApi from '~/services/app';
 
-import axios from 'axios';
-import { GraphContext } from '~/context/GraphContext';
 import CollapsibleTable from './CollapsibleTable';
-import { createExecutionLogs } from '~/helpers/executionFactory';
+import { createExecutionLogs } from '~/utils/helpers/executionFactory';
 import { ApiContext } from '~/context/ApiContext';
-import { SnackbarContext } from '~/context/SnackContext';
+import { ScenarioContext } from '~/context/ScenarioContext';
 
 const useStyles = makeStyles((theme) => ({
   selectEmpty: {
@@ -44,16 +38,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     flex: 1,
   },
-  // contentVnc: {
-  //   height: '100vh',
-  // },
 }));
 
-const ShowTableModal = forwardRef((props, ref) => {
+const ShowLogsModal = forwardRef((props, ref) => {
   const classes = useStyles();
-  const { snackBarOpen } = useContext(SnackbarContext);
   const { ip } = useContext(ApiContext);
-  const { name } = useContext(GraphContext);
+  const { name } = useContext(ScenarioContext);
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [logsApi, setLogsApi] = useState([]);
@@ -77,7 +67,7 @@ const ShowTableModal = forwardRef((props, ref) => {
 
   const getLogs = useCallback(async () => {
     try {
-      const response = await axios.get(`http://${ip}:5000/exec/logs`);
+      const response = await appApi.getAllLogs(ip);
       if (response.data?.code === 200) {
         setLogsApi(response.data?.execution_log);
         setRows(createExecutionLogs(response.data?.execution_log));
@@ -141,12 +131,12 @@ const ShowTableModal = forwardRef((props, ref) => {
   );
 });
 
-ShowTableModal.displayName = 'ShowTableModal';
+ShowLogsModal.displayName = 'ShowLogsModal';
 
-ShowTableModal.propTypes = {};
+ShowLogsModal.propTypes = {};
 
-ShowTableModal.defaultProps = {
+ShowLogsModal.defaultProps = {
   onSubmit: null,
 };
 
-export default ShowTableModal;
+export default ShowLogsModal;
