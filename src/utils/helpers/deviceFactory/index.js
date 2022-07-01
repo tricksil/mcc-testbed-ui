@@ -102,10 +102,9 @@ export function DeviceFactory(
 ) {
   const ipsSelected = [];
   const namesSelected = [];
-  const nodes = new Array(quantity).fill().map((value) => {
+  const nodes = new Array(quantity).fill().map(() => {
     const id = v4().split('-')[0];
     const createNode = {
-      ...value,
       ...customNode,
       id,
     };
@@ -113,9 +112,9 @@ export function DeviceFactory(
       const name = createName(graphs, namesSelected)(customNode.type);
       const dimage = createDimage(customNode.type);
       const ip = ipRandom(graphs, ipsSelected);
-      const title = `Type: ${typeTitle[customNode.type]}<br>Name: ${name}<br>${
-        customNode.title
-      }<br>IP: ${ip}<br>Image: ${customNode.dimage}`;
+      const title = `Type: ${
+        typeTitle[customNode.type]
+      }<br>Name: ${name}<br>IP: ${ip}<br>Image: ${dimage}`;
       createNode.label = name;
       createNode.dimage = dimage;
       createNode.ip = ip;
@@ -126,6 +125,8 @@ export function DeviceFactory(
       createNode.label = id;
       createNode.title = `Type: Switch<br>Name: ${id}`;
     }
+
+    console.log(createNode);
 
     return createNode;
   });

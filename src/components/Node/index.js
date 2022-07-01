@@ -202,13 +202,13 @@ Node.propTypes = {
   ipError: PropTypes.bool.isRequired,
   setIpError: PropTypes.func.isRequired,
   data: PropTypes.oneOfType([PropTypes.object]).isRequired,
-  edit: PropTypes.bool.isRequired,
+  edit: PropTypes.bool,
   checked: PropTypes.bool,
   toggleChecked: PropTypes.func,
   quantity: PropTypes.string,
   handleChangeQuantity: PropTypes.func,
   quantityError: PropTypes.bool,
-  deviceChecked: PropTypes.bool,
+  deviceChecked: PropTypes.string,
   handleChangeDeviceCheck: PropTypes.func,
   deviceCheckedError: PropTypes.bool,
   delayRandom: PropTypes.string,
@@ -223,6 +223,7 @@ Node.propTypes = {
 };
 
 Node.defaultProps = {
+  edit: false,
   handleChangeDevice: () => {},
   deviceError: false,
   ipCache: '',
@@ -231,7 +232,7 @@ Node.defaultProps = {
   quantity: '',
   handleChangeQuantity: () => {},
   quantityError: false,
-  deviceChecked: false,
+  deviceChecked: '',
   handleChangeDeviceCheck: () => {},
   deviceCheckedError: false,
   delayRandom: '',

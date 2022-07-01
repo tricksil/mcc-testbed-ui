@@ -100,6 +100,7 @@ export function saveNodesAndEdge(
     size: 15,
     type: typeChoose,
   };
+  console.log(customNode);
   const customEdge = {
     bandwidth: Number(bandwidthRandom),
     delay: `${delayRandom}`,
