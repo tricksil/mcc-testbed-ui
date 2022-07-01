@@ -53,7 +53,7 @@
   "build": {
     "productName": "MCC Testbed",
     "appId": "com.tcc.mcc",
-    "buildVersion": "1.0.1",
+    "buildVersion": "1.0.3",
     "mac": {
       "target": "dmg",
       "category": "Aplications",
