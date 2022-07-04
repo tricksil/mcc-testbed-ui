@@ -69,7 +69,7 @@ export function convertionalToVis(testbed) {
       shape: 'image',
       image: type[node.type],
       size: 15,
-      title: `Type: ${typeTitle[node.type]}Name: ${node.name}<br>Ip: ${
+      title: `Type: ${typeTitle[node.type]}<br>Name: ${node.name}<br>Ip: ${
         node.ip
       }<br>Image: ${node.dimage}`,
     }));
