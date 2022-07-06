@@ -66,13 +66,10 @@ function ipRandom(graphs, ipsSelected) {
   let ipChoose = null;
   const ipsGraphs = hasIps(graphs);
   const ipsExists = [...ipsGraphs, ...ipsSelected];
-
-  ipChoose = Math.floor(Math.random() * 255);
-
-  while (ipsExists.includes(ipChoose)) {
-    ipChoose = Math.floor(Math.random() * 255);
+  ipChoose = Math.floor(Math.random() * 254) + 1;
+  while (ipsExists.includes(`10.0.0.${ipChoose}`)) {
+    ipChoose = Math.floor(Math.random() * 254) + 1;
   }
-
   return `10.0.0.${ipChoose}`;
 }
 
@@ -112,6 +109,7 @@ export function DeviceFactory(
       const name = createName(graphs, namesSelected)(customNode.type);
       const dimage = createDimage(customNode.type);
       const ip = ipRandom(graphs, ipsSelected);
+      console.log('ip', ip, 'ipsSelected', ipsSelected);
       const title = `Type: ${
         typeTitle[customNode.type]
       }<br>Name: ${name}<br>IP: ${ip}<br>Image: ${dimage}`;
